@@ -3,10 +3,14 @@ source 'https://rubygems.org'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.1.1'
-gem 'bootstrap-sass'
 gem 'sprockets'
 gem 'bcrypt-ruby'
 gem 'faker'
+gem 'httparty'
+gem 'tubesock'
+gem 'thin'
+gem 'websocket-rails'
+gem 'bootstrap-sass'
 # Use mysql as the database for Active Record
 
 
@@ -20,8 +24,16 @@ group :test do
   gem 'capybara'
   gem 'factory_girl_rails'
 end
-# Use SCSS for stylesheets
-gem 'sass-rails', '~> 4.0.3'
+
+group :assets do
+  gem 'less'
+end
+
+gem 'therubyracer'
+gem 'less-rails' #Sprockets (what Rails 3.1 uses for its asset pipeline) supports LESS
+gem 'twitter-bootstrap-rails'
+
+
 # Use Uglifier as compressor for JavaScript assets
 gem 'uglifier', '>= 1.3.0'
 # Use CoffeeScript for .js.coffee assets and views

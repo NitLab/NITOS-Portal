@@ -46,5 +46,17 @@ describe "Static pages" do
 	    end
   	end
 
+  	describe "Node status page" do
+	  	it "should have the content 'Node status'" do
+	      visit node_status_path
+	      expect(page).to have_content('Node status')
+	    end
+
+	    it "should have the title 'Node status'" do
+	      visit node_status_path
+	      expect(page).to have_title("#{base_title} | Node status")
+	    end
+  	end
+
 
 end

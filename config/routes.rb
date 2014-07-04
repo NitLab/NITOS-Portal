@@ -8,7 +8,9 @@ Rails.application.routes.draw do
   match '/signout',         to: 'sessions#destroy',              via: 'delete'
   match '/your_ssh_keys',   to: 'static_pages#your_ssh_keys',    via: 'get'
   match '/about',           to: 'static_pages#about',            via: 'get'
-
+  match '/node_status',     to: 'static_pages#node_status',      via: 'get'
+  post 'static_pages/set_node_on' => 'static_pages#set_node_on'
+  post 'static_pages/set_node_off' => 'static_pages#set_node_off'
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

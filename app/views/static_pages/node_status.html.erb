@@ -1,0 +1,53 @@
+<% provide(:title, 'Node status') %>
+<h1>Node status</h1>
+
+<div id = "node-status">
+	<%
+	$i = 120
+	$num = 122
+
+	while $i < $num  do
+		%>
+		<div id = "node <%= $i%>" class = "nodes">
+			<%
+			require "httparty"
+			require "json"
+			
+			res =  getNodeStatus($i)
+			temp = JSON.parse(res.body)%>
+
+			<h3>Einai o komvos<%=temp["node"]%></h3>
+			</br>
+			<p>H apanthsh tou einai <%=temp["response"]%></p>
+			</br>
+			<p>Kai to mnm tou <%=temp["msg"]%></p>
+			</br><%
+
+			#get status of node 121
+			res = HTTParty.get("http://83.212.32.165:4567/resources/node/#$i")
+			puts JSON.parse(res.body)
+
+			%><%months = JSON.parse(res.body)%>
+			<h3 id = "<%=$i%>">Node<%=months["node"]%></h3>
+			</br>
+			<p id = "p-<%=$i%>"><%=months["response"]%></p>
+			</br>
+			<%=months["msg"]%>
+			</br>
+
+			<%= button_to "ON", {:action => "set_node_on", :controller => "static_pages", :node_id => "#$i"}, :class => "btn btn-primary" %>
+			<%= button_to "OFF", {:action => "set_node_off", :controller => "static_pages", :node_id => "#$i"} , :class => "btn btn-danger"%>
+		
+			
+		</div>
+
+   		<%
+   	$i +=1
+	end
+
+
+	%>
+
+
+		
+</div>
