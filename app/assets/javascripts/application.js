@@ -18,3 +18,8 @@
 //= require_tree .
 //= require websocket_rails/main
 
+var dispatcher = new WebSocketRails('localhost:3000/websocket');
+channel = dispatcher.subscribe('nodes');
+channel.bind('timh', function(counter) {
+  $("#timh_counter").append("O counter twra exei timh"+ counter);
+})

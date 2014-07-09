@@ -14,7 +14,18 @@ class StaticPagesController < ApplicationController
   def your_ssh_keys
   end
 
-  def node_status    
+  def node_status
+    @counter = 1
+    while @counter < 5  do
+      puts ("Kalhspera!")
+      puts "#@counter"
+      
+      WebsocketRails[:nodes].trigger 'timh', @counter 
+      @counter +=1
+      sleep 3.0
+    end    
+      puts ("Geia sas")
+    
   end
 
   def set_node_on

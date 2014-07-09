@@ -12,7 +12,16 @@
 			<%
 			require "httparty"
 			require "json"
+
 			
+
+			%>
+			<h3 id = "timh_counter">O counter exei timh <%=@counter%></h3>
+
+			<%
+			
+
+			    
 			res =  getNodeStatus($i)
 			temp = JSON.parse(res.body)%>
 
@@ -22,6 +31,8 @@
 			</br>
 			<p>Kai to mnm tou <%=temp["msg"]%></p>
 			</br><%
+
+			
 
 			#get status of node 121
 			res = HTTParty.get("http://83.212.32.165:4567/resources/node/#$i")
@@ -51,3 +62,19 @@
 
 		
 </div>
+
+<script>
+	jQuery(document).ready(function () {
+            refreshPage();
+            setInterval(refreshingPage, 2000)
+        });
+
+
+        function refreshingPage() {
+          $.ajax({
+            url: "/static_pages/node_status",
+            type: "GET",
+            dataType: "script",
+          });
+        }
+</script>
