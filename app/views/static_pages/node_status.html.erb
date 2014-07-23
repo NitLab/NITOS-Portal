@@ -1,53 +1,57 @@
 <% provide(:title, 'Node status') %>
 <h1>Node status</h1>
 
-<div id = "node-status">
+<%
+require "httparty"
+require "json"
+
+node_list = getNodeList()
+puts node_list
+
+%>
+
+<%= javascript_tag do %>
+  window.node_list = <%=raw node_list.to_json %>;
+<% end %>
+
+<div class = "container">
+	<div class = "row">
+
+
+<div id = "node_status">
+<%
+node_list.each do |element|
+	res =  getNodeStatus(element["name"])
+	temp = JSON.parse(res.body)%>
+	<div id = "node_<%=element["name"]%>" class = "nodes">
+	
+		<p><%=temp["node"]%></p>
+		<p id = "node<%=element["name"]%>"><%=temp["response"]%></p>
+		
+		<%= button_to "OFF", {:action => "set_node_off", :controller => "static_pages", :node_id => element["name"]} , :class => "btn btn-danger"%>
+	
+		<%= button_to "ON", {:action => "set_node_on", :controller => "static_pages", :node_id => element["name"]}, :class => "btn btn-primary" %>
+	</div>
 	<%
+end
+
 	$i = 120
 	$num = 122
 
 	while $i < $num  do
 		%>
-		<div id = "node <%= $i%>" class = "nodes">
+		<div id = "node_<%= $i%>" class = "nodes">
 			<%
-			require "httparty"
-			require "json"
-
-			
-
-			%>
-			<h3 id = "timh_counter">O counter exei timh <%=@counter%></h3>
-
-			<%
-			
-
-			    
-			res =  getNodeStatus($i)
+		    node_id = $i.to_s
+			res =  getNodeStatus(node_id)
 			temp = JSON.parse(res.body)%>
 
-			<h3>Einai o komvos<%=temp["node"]%></h3>
-			</br>
-			<p>H apanthsh tou einai <%=temp["response"]%></p>
-			</br>
-			<p>Kai to mnm tou <%=temp["msg"]%></p>
-			</br><%
+			<p ><%=temp["node"]%></p>
+			<p id = "node<%= $i%>"><%=temp["response"]%></p>
 
 			
-
-			#get status of node 121
-			res = HTTParty.get("http://83.212.32.165:4567/resources/node/#$i")
-			puts JSON.parse(res.body)
-
-			%><%months = JSON.parse(res.body)%>
-			<h3 id = "<%=$i%>">Node<%=months["node"]%></h3>
-			</br>
-			<p id = "p-<%=$i%>"><%=months["response"]%></p>
-			</br>
-			<%=months["msg"]%>
-			</br>
-
-			<%= button_to "ON", {:action => "set_node_on", :controller => "static_pages", :node_id => "#$i"}, :class => "btn btn-primary" %>
-			<%= button_to "OFF", {:action => "set_node_off", :controller => "static_pages", :node_id => "#$i"} , :class => "btn btn-danger"%>
+			<%= button_to "OFF", {:action => "set_node_off", :controller => "static_pages", :node_id => node_id} , :class => "btn btn-danger"%>
+			<%= button_to "ON", {:action => "set_node_on", :controller => "static_pages", :node_id => node_id}, :class => "btn btn-primary" %>
 		
 			
 		</div>
@@ -58,23 +62,9 @@
 
 
 	%>
-
-
 		
+
 </div>
 
-<script>
-	jQuery(document).ready(function () {
-            refreshPage();
-            setInterval(refreshingPage, 2000)
-        });
-
-
-        function refreshingPage() {
-          $.ajax({
-            url: "/static_pages/node_status",
-            type: "GET",
-            dataType: "script",
-          });
-        }
-</script>
+</div>
+</div>

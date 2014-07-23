@@ -3,30 +3,41 @@ module StaticPagesHelper
 	require "httparty"
   	require "json"
 
-  	def getNodeStatus(node_id)
-	    $node_num = node_id
+  	def getNodeList
+  		broker_url = APP_CONFIG['broker_ip'] + ':' + APP_CONFIG['broker_port'].to_s
+
+		result = HTTParty.get(broker_url + "/resources/nodes", :verify => false)
+		temp2 = JSON.parse(result.body)
+
+		node_data =  temp2["resource_response"]["resources"]
+		return node_data
+  		
+  	end
+
+  	def getNodeStatus(node_id) 			   
+	    cm_url = APP_CONFIG['cm_ip'] + ':' + APP_CONFIG['cm_port'].to_s
 	    
-	    res = HTTParty.get("http://83.212.32.165:4567/resources/node/#$node_num")
+	    res = HTTParty.get(cm_url+"/resources/node/"+ node_id)
 	    puts JSON.parse(res.body)
 
 	    return res
 
-	  end
+	end
 
 	def setNodeON(node_id)
-		$node_num = node_id
+		cm_url = APP_CONFIG['cm_ip'] + ':' + APP_CONFIG['cm_port'].to_s
 
 		options = {body: {state:"on"}.to_json, :headers => { 'Content-Type' => 'application/json' }}
-	  	res = HTTParty.put("http://83.212.32.165:4567/resources/node/#$node_num", options)
+	  	res = HTTParty.put(cm_url+"/resources/node/"+ node_id, options)
 	  	puts JSON.parse(res.body)
 	  	
 	end
 
-	def setNodeOFF(node_id)
-		
-		$node_num = node_id
+	def setNodeOFF(node_id)		
+		cm_url = APP_CONFIG['cm_ip'] + ':' + APP_CONFIG['cm_port'].to_s
+
 		options = {body: {state:"off"}.to_json, :headers => { 'Content-Type' => 'application/json' }}
-	  	res = HTTParty.put("http://83.212.32.165:4567/resources/node/#$node_num", options)
+	  	res = HTTParty.put(cm_url+"/resources/node/"+ node_id, options)
 	  	puts JSON.parse(res.body)
 	  	
 	end

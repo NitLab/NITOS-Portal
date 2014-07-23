@@ -2,9 +2,6 @@ class StaticPagesController < ApplicationController
 
   include StaticPagesHelper
 
-  require "httparty"
-  require "json"
-
   def home
   end
 
@@ -15,17 +12,6 @@ class StaticPagesController < ApplicationController
   end
 
   def node_status
-    @counter = 1
-    while @counter < 5  do
-      puts ("Kalhspera!")
-      puts "#@counter"
-      
-      WebsocketRails[:nodes].trigger 'timh', @counter 
-      @counter +=1
-      sleep 3.0
-    end    
-      puts ("Geia sas")
-    
   end
 
   def set_node_on
@@ -33,7 +19,7 @@ class StaticPagesController < ApplicationController
     puts node_id
     setNodeON(node_id)
     
-    redirect_to node_status_path :notice => "Node ON"
+    redirect_to node_status_path 
   end
 
   def set_node_off
@@ -41,8 +27,7 @@ class StaticPagesController < ApplicationController
     puts node_id
     setNodeOFF(node_id)
     
-    sleep 5.0
-    redirect_to node_status_path :notice => "Node OFF"
+    redirect_to node_status_path
   end
 
   

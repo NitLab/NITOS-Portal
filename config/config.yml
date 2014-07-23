@@ -1,0 +1,13 @@
+defaults: &defaults
+  broker_ip: https://83.212.32.165
+  broker_port: 8001
+  cm_ip: http://83.212.32.165
+  cm_port: 4567
+development:
+  <<: *defaults
+
+test:
+  <<: *defaults
+
+production:
+  <<: *defaults

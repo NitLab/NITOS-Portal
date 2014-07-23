@@ -134,3 +134,22 @@ input {
     margin: 0 0 18px 0;
 }
 
+/*node status*/
+
+.nodes{
+  width: auto;
+  padding: 10px;
+  float:right;
+  border-style: solid; 
+  margin: 2px;
+}
+
+.button_to{
+  width: 50px;  
+  float: right;  
+}
+
+.button{
+  color: blue;
+}
+

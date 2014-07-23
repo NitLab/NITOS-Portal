@@ -18,8 +18,59 @@
 //= require_tree .
 //= require websocket_rails/main
 
+
 var dispatcher = new WebSocketRails('localhost:3000/websocket');
 channel = dispatcher.subscribe('nodes');
-channel.bind('timh', function(counter) {
-  $("#timh_counter").append("O counter twra exei timh"+ counter);
+
+// var node_list = getNodeList();
+// var element;
+// for (i=0; i < node_list.length; i++){
+//     console.log(node_list.length);
+//     console.log(element["name"]);
+
+//     var fact = element["name"];
+//     channel.bind(fact, function(temp) {
+		  
+// 	if (temp["response"] == "on"){
+// 		 $("#node_<%fact%>").css("background", "#00FFCC");
+// 		  }else if(temp["response"] == "off"){
+// 		  	$("#node_<%fact%>").css("background", "#989898 ");
+// 		  }else{
+// 		  	$("#node_<%fact%>").css("background", "white");
+// 		  }
+// 		})
+// }
+
+
+//   $(document).ready(function(){
+//     console.log(node_list.length);
+//     console.log(node_list);
+//     var element = node_list;
+// }); 
+
+
+
+var temp = 'status'
+channel.bind(temp, function(temp) {
+  var node = temp["node"]
+  $("#node"+node).html(temp["response"]+"!");
+  if (temp["response"] == "on"){
+  	$("#node_"+node).css("background", "#00FFCC");
+  }else if(temp["response"] == "off"){
+  	$("#node_"+node).css("background", "#989898 ");
+  }else{
+  	$("#node_"+node).css("background", "white");
+  }
 })
+
+// channel.bind('status121', function(temp) {
+//   $("#test121").html(temp["response"]+"!");
+//   if (temp["response"] == "on"){
+//   	$("#node_121").css("background", "#00FFCC");
+//   }else if(temp["response"] == "off"){
+//   	$("#node_121").css("background", "#989898 ");
+//   }else{
+//   	$("#node_121").css("background", "white");
+//   }
+// })
+
