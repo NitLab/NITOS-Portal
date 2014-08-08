@@ -1,11 +1,13 @@
 defaults: &defaults
   broker_ip: https://83.212.32.165
   broker_port: 8001
+  broker_sleep: 10
   cm_ip: http://83.212.32.165
   cm_port: 4567
+  cm_sleep: 2.0
 development:
   <<: *defaults
-
+  
 test:
   <<: *defaults
 

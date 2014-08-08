@@ -1,10 +1,10 @@
 module StaticPagesHelper
 
 	require "httparty"
-  	require "json"
+  require "json"
 
-  	def getNodeList
-  		broker_url = APP_CONFIG['broker_ip'] + ':' + APP_CONFIG['broker_port'].to_s
+  def getNodeList
+  	broker_url = APP_CONFIG['broker_ip'] + ':' + APP_CONFIG['broker_port'].to_s
 
 		result = HTTParty.get(broker_url + "/resources/nodes", :verify => false)
 		temp2 = JSON.parse(result.body)
@@ -12,15 +12,14 @@ module StaticPagesHelper
 		node_data =  temp2["resource_response"]["resources"]
 		return node_data
   		
-  	end
+  end
 
-  	def getNodeStatus(node_id) 			   
-	    cm_url = APP_CONFIG['cm_ip'] + ':' + APP_CONFIG['cm_port'].to_s
+  def getNodeStatus(node_id) 			   
+	   cm_url = APP_CONFIG['cm_ip'] + ':' + APP_CONFIG['cm_port'].to_s
 	    
-	    res = HTTParty.get(cm_url+"/resources/node/"+ node_id)
-	    puts JSON.parse(res.body)
+	   res = HTTParty.get(cm_url+"/resources/node/"+ node_id)
 
-	    return res
+	   return res
 
 	end
 
@@ -29,7 +28,6 @@ module StaticPagesHelper
 
 		options = {body: {state:"on"}.to_json, :headers => { 'Content-Type' => 'application/json' }}
 	  	res = HTTParty.put(cm_url+"/resources/node/"+ node_id, options)
-	  	puts JSON.parse(res.body)
 	  	
 	end
 
@@ -38,7 +36,14 @@ module StaticPagesHelper
 
 		options = {body: {state:"off"}.to_json, :headers => { 'Content-Type' => 'application/json' }}
 	  	res = HTTParty.put(cm_url+"/resources/node/"+ node_id, options)
-	  	puts JSON.parse(res.body)
+	  	
+	end
+
+	def resetNode(node_id)		
+		cm_url = APP_CONFIG['cm_ip'] + ':' + APP_CONFIG['cm_port'].to_s
+
+		options = {body: {state:"reset"}.to_json, :headers => { 'Content-Type' => 'application/json' }}
+	  	res = HTTParty.put(cm_url+"/resources/node/"+ node_id, options)
 	  	
 	end
 

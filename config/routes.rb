@@ -11,6 +11,7 @@ Rails.application.routes.draw do
   match '/node_status',     to: 'static_pages#node_status',      via: 'get'
   post 'static_pages/set_node_on' => 'static_pages#set_node_on'
   post 'static_pages/set_node_off' => 'static_pages#set_node_off'
+  post 'static_pages/reset_node' => 'static_pages#reset_node'
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

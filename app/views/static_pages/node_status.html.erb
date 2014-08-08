@@ -5,64 +5,57 @@
 require "httparty"
 require "json"
 
-node_list = getNodeList()
-puts node_list
-
 %>
 
-<%= javascript_tag do %>
-  window.node_list = <%=raw node_list.to_json %>;
-<% end %>
-
 <div class = "container">
-	<div class = "row">
+  <div class = "row">
 
 
 <div id = "node_status">
 <%
-node_list.each do |element|
-	res =  getNodeStatus(element["name"])
-	temp = JSON.parse(res.body)%>
-	<div id = "node_<%=element["name"]%>" class = "nodes">
-	
-		<p><%=temp["node"]%></p>
-		<p id = "node<%=element["name"]%>"><%=temp["response"]%></p>
-		
-		<%= button_to "OFF", {:action => "set_node_off", :controller => "static_pages", :node_id => element["name"]} , :class => "btn btn-danger"%>
-	
-		<%= button_to "ON", {:action => "set_node_on", :controller => "static_pages", :node_id => element["name"]}, :class => "btn btn-primary" %>
-	</div>
-	<%
+@node_list.each do |element|%>
+  <div id = "node_<%=element%>" class = "nodes">
+  
+    <p><%=element%></p>
+    <p id = "node<%=element%>"></p>
+    
+    <%= button_to "OFF", {:action => "set_node_off", :controller => "static_pages", :node_id => element} ,:id =>"off_"+element, :class => "btn btn-danger"%>
+  
+    <%= button_to "ON", {:action => "set_node_on", :controller => "static_pages", :node_id => element},:id =>"on_"+element, :class => "btn btn-primary" %>
+    <%= button_to "Reset", {:action => "reset_node", :controller => "static_pages", :node_id => element},:id =>"reset"+element, :class => "btn", :remote => true, :disabled => true %>
+  </div>
+  <%
 end
 
-	$i = 120
-	$num = 122
+  $i = 120
+  $num = 122
 
-	while $i < $num  do
-		%>
-		<div id = "node_<%= $i%>" class = "nodes">
-			<%
-		    node_id = $i.to_s
-			res =  getNodeStatus(node_id)
-			temp = JSON.parse(res.body)%>
+  while $i < $num  do
+    %>
+    <div id = "node_<%= $i%>" class = "nodes">
+      <%
+        node_id = $i.to_s
+      res =  getNodeStatus(node_id)
+      temp = JSON.parse(res.body)%>
 
-			<p ><%=temp["node"]%></p>
-			<p id = "node<%= $i%>"><%=temp["response"]%></p>
+      <p ><%=temp["node"]%></p>
+      <p id = "node<%= $i%>"><%=temp["response"]%></p>
 
-			
-			<%= button_to "OFF", {:action => "set_node_off", :controller => "static_pages", :node_id => node_id} , :class => "btn btn-danger"%>
-			<%= button_to "ON", {:action => "set_node_on", :controller => "static_pages", :node_id => node_id}, :class => "btn btn-primary" %>
-		
-			
-		</div>
+      
+      <%= button_to "OFF", {:action => "set_node_off", :controller => "static_pages", :node_id => node_id} ,:id =>"off_"+$i.to_s, :class => "btn btn-danger", :remote => true, :disabled => false %>
+      <%= button_to "ON", {:action => "set_node_on", :controller => "static_pages", :node_id => node_id},:id =>"on_"+$i.to_s, :class => "btn btn-primary", :remote => true, :disabled => false %>
+      <%= button_to "Reset", {:action => "reset_node", :controller => "static_pages", :node_id => node_id},:id =>"reset"+$i.to_s, :class => "btn", :remote => true, :disabled => true %>
+    
+      
+    </div>
 
-   		<%
-   	$i +=1
-	end
+      <%
+    $i +=1
+  end
 
 
-	%>
-		
+  %>
+    
 
 </div>
 
