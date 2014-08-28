@@ -1,0 +1,86 @@
+<% provide(:title, 'Scheduler') %>
+<h1>Scheduler</h1>
+
+<div class = "container">
+  <div class = "row">
+
+    <div class="dropdown">
+      <a id="dLabel" role="button" data-toggle="dropdown" data-target="#" href="/page.html">
+        Your slices <span class="caret"></span>
+      </a>
+
+
+      <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+        <%
+        @user_slices.each do |element|
+          puts element
+          %><li role = "presentation"><%=element%></li><%
+        end
+        %>
+      </ul>
+    </div>
+
+  <div class="container">
+    <div class="row">
+        <div class='col-sm-6'>
+            <div class="form-group">
+                <div class='input-group date' id='datetimepicker1'>
+                    <input type='text' class="form-control" />
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript">
+            $(function () {
+                $('#datetimepicker1').datetimepicker();
+            });
+        </script>
+    </div>
+</div>
+    <div class="table-responsive">
+
+      
+      <table class="table">
+
+        <tr>
+        <%@reservation_table[0].each_key do |key|%>
+          <td><%=key%></td>
+        <%end%>
+        </tr>
+
+        
+        
+        <%@reservation_table.each do |iterate|%>
+        <tr>
+          <%iterate.each do |key, value|%>            
+              <td>
+                <%=value%>
+                <%if value == "0"%>
+                  <%=check_box_tag 'example'%>
+                <%else%>
+                  <%=check_box_tag( 'example' ,disabled: true)%>
+                <%end%>  
+              </td>
+          <%end%>
+          </tr>
+        <%end%>
+      </table>
+    </div>
+
+    <%=check_box_tag 'example'%>
+
+    
+
+    <div id = "sceduler_121">
+      <h1>121</h1>
+            
+    <%= button_to "Reserve node121", {:action => "reserve_node", :controller => "static_pages", :node_id => "121"} , :class => "btn btn-primary", :remote => true, :disabled => false %>
+         
+    </div> 
+
+  </div>
+</div>
+
+
+

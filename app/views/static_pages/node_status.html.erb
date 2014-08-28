@@ -19,40 +19,13 @@ require "json"
     <p><%=element%></p>
     <p id = "node<%=element%>"></p>
     
-    <%= button_to "OFF", {:action => "set_node_off", :controller => "static_pages", :node_id => element} ,:id =>"off_"+element, :class => "btn btn-danger"%>
+    <%= button_to "OFF", {:action => "set_node_off", :controller => "static_pages", :node_id => element} ,:id =>"off_"+element, :class => "btn btn-danger" , :remote => true, :disabled => false %>
   
-    <%= button_to "ON", {:action => "set_node_on", :controller => "static_pages", :node_id => element},:id =>"on_"+element, :class => "btn btn-primary" %>
+    <%= button_to "ON", {:action => "set_node_on", :controller => "static_pages", :node_id => element},:id =>"on_"+element, :class => "btn btn-primary", :remote => true, :disabled => true %>
     <%= button_to "Reset", {:action => "reset_node", :controller => "static_pages", :node_id => element},:id =>"reset"+element, :class => "btn", :remote => true, :disabled => true %>
   </div>
   <%
 end
-
-  $i = 120
-  $num = 122
-
-  while $i < $num  do
-    %>
-    <div id = "node_<%= $i%>" class = "nodes">
-      <%
-        node_id = $i.to_s
-      res =  getNodeStatus(node_id)
-      temp = JSON.parse(res.body)%>
-
-      <p ><%=temp["node"]%></p>
-      <p id = "node<%= $i%>"><%=temp["response"]%></p>
-
-      
-      <%= button_to "OFF", {:action => "set_node_off", :controller => "static_pages", :node_id => node_id} ,:id =>"off_"+$i.to_s, :class => "btn btn-danger", :remote => true, :disabled => false %>
-      <%= button_to "ON", {:action => "set_node_on", :controller => "static_pages", :node_id => node_id},:id =>"on_"+$i.to_s, :class => "btn btn-primary", :remote => true, :disabled => false %>
-      <%= button_to "Reset", {:action => "reset_node", :controller => "static_pages", :node_id => node_id},:id =>"reset"+$i.to_s, :class => "btn", :remote => true, :disabled => true %>
-    
-      
-    </div>
-
-      <%
-    $i +=1
-  end
-
 
   %>
     

@@ -24,7 +24,7 @@ channel = dispatcher.subscribe('nodes');
 
 var temp = 'status'
 channel.bind(temp, function(temp) {
-  var node = temp["node"]
+  var node = temp["node"];
   $("#node"+node).html(temp["response"]+"!");
   if (temp["response"] == "on"){
   	$("#node_"+node).css("background", "#00FFCC");

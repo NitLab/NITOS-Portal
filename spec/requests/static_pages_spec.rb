@@ -58,5 +58,17 @@ describe "Static pages" do
 	    end
   	end
 
+  	describe "Scheduler page" do
+	  	it "should have the content 'Scheduler'" do
+	      visit scheduler_path
+	      expect(page).to have_content('Scheduler')
+	    end
+
+	    it "should have the title 'Scheduler'" do
+	      visit scheduler_path
+	      expect(page).to have_title("#{base_title} | Scheduler")
+	    end
+  	end
+
 
 end

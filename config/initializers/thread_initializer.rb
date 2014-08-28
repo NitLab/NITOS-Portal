@@ -5,19 +5,29 @@ class Nodes
   x= []
   Nodes.class_variable_set(:@@node_list, x)
 
+  y= []
+  Nodes.class_variable_set(:@@node_list_names, y)
+
   def refresh_node_list
     x= []
     Nodes.class_variable_set(:@@node_list, x)
+
+    y= []
+    Nodes.class_variable_set(:@@node_list_names, y)
     node_list = getNodeList()
     node_list.each do |element|
       if (element["hardware_type"].start_with? ("PC-"))
-        @@node_list << element["name"]
+        @@node_list << element["name"].scan( /\d+$/ ).first
+        @@node_list_names << element["name"]
       end
     end
   end
 
+  def get_node_list_names
+    return @@node_list_names 
+  end
+
   def get_node_list
-    puts @@node_list
     return @@node_list 
   end
 
@@ -40,15 +50,6 @@ Thread.new do
 
       WebsocketRails[:nodes].trigger 'status', temp
     end
-
-    res = getNodeStatus("120")
-    temp = JSON.parse(res.body)
-    WebsocketRails[:nodes].trigger 'status', temp 
-
-    num = 'status121'
-    res = getNodeStatus("121")
-    temp = JSON.parse(res.body)
-    WebsocketRails[:nodes].trigger 'status', temp 
 
     sleep APP_CONFIG['cm_sleep']
   end
