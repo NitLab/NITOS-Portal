@@ -107,21 +107,23 @@ module StaticPagesHelper
 	  	
 	end
 
-	def reserveNode(node_id)
+	def reserveNode(node_id,account_name,valid_from,valid_until)
+		resernation_name =(1000 + Random.rand(10000000)).to_s
+		puts node_id
 		broker_url = APP_CONFIG['broker_ip'] + ':' + APP_CONFIG['broker_port'].to_s
 		header = {"Content-Type" => "application/json"}
 		options ={
-							 		name: '|111111',
-							 		valid_from: '2014-09-15 15:00:00 +0300',
-							 		valid_until: '2014-09-15 17:00:00 +0300',
+							 		name: resernation_name,
+							 		valid_from: valid_from,
+							 		valid_until: valid_until,
 							 		account: 
 							 			{ 
-							 				name: 'ardadouk'
+							 				name: account_name
 							 			},
 							 		components: 
 							 		[
 							 			{ 
-							 				uuid: 'fa3d3969-7705-453c-850c-8a1e78f33221'
+							 				uuid: node_id
 							 			}
 							 		]
 							 	}

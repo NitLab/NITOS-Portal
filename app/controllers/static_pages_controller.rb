@@ -23,11 +23,13 @@ class StaticPagesController < ApplicationController
     ]
 
     node_obj = Nodes.new
+    @date = "2014-09-15"
     @node_list = node_obj.get_node_list
     @node_list_names = node_obj.get_node_list_names
+    puts @node_list_uuids
     @user_slices = getSlices()
     @leases = getLeases()
-    @today_leases = getLeasesByDate("2014-09-15")
+    @today_leases = getLeasesByDate(@date)
 
     num = @node_list_names.length
 
@@ -43,11 +45,7 @@ class StaticPagesController < ApplicationController
     puts rows.inspect
 
     @reservation_table = rows.map{|r| Hash[ *columns.zip(r).flatten ] }
-    puts @reservation_table.inspect  
-
-    puts "aaaaaaaaaaaaaaaaaaaaaaaa"
-    puts ""
-
+    #puts @reservation_table.inspect  
 
     @reservation_table.each do |iterate|
       @today_leases.each do |t_lease|
@@ -56,7 +54,7 @@ class StaticPagesController < ApplicationController
           valid_until = t_lease["valid_until"].split('T')[1][0...-4]
           if valid_from < valid_until 
             iterate.each_key do |key|
-              if key>= valid_from && key <= valid_until
+              if key>= valid_from && key < valid_until
                 iterate[key] = 1
               end
             end
@@ -72,9 +70,7 @@ class StaticPagesController < ApplicationController
       end
       
     end
-    puts @reservation_table
-
-    @new_todo = {"hash" => 0}
+    #puts @reservation_table
 
   end
 
@@ -117,5 +113,89 @@ class StaticPagesController < ApplicationController
     end
   end
 
+
   
+  def reservation
+
+    @date = "2014-09-15"
+    node_obj = Nodes.new
+    @node_list_uuids = node_obj.get_node_list_uuids
+    # Vriskw poioi komvoi einai pros krathsh 
+    ids = []
+    reservations = params[:reservations]
+
+    puts params[:user_slice]
+
+    puts Date.civil(params[:start_date][:year].to_i,params[:start_date][:month].to_i, params[:start_date][:day].to_i)
+    puts reservations
+    reservations.each do |reservation|
+      if !ids.include?(reservation.split('/')[0])
+        ids << reservation.split('/')[0]
+      end
+    end
+
+    #Dhmiourgw hash gia kathe komvo 
+    ids.each_index do |i|
+      r_name = ids[i]
+      ids[i] = {"Name"=>r_name, @date+" 00:00"=>0, @date+" 00:30"=>0, @date+" 01:00"=>0, @date+" 01:30"=>0,
+     @date+" 02:00"=>0, @date+" 02:30"=>0, @date+" 03:00"=>0, @date+" 03:30"=>0, @date+" 04:00"=>0, @date+" 04:30"=>0,
+      @date+" 05:00"=>0, @date+" 05:30"=>0, @date+" 06:00"=>0, @date+" 06:30"=>0, @date+" 07:00"=>0, @date+" 07:30"=>0,
+       @date+" 08:00"=>0, @date+" 08:30"=>0, @date+" 09:00"=>0, @date+" 09:30"=>0, @date+" 10:00"=>0, @date+" 10:30"=>0,
+        @date+" 11:00"=>0, @date+" 11:30"=>0, @date+" 12:00"=>0, @date+" 12:30"=>0, @date+" 13:00"=>0, @date+" 13:30"=>0,
+         @date+" 14:00"=>0, @date+" 14:30"=>0, @date+" 15:00"=>0, @date+" 15:30"=>0, @date+" 16:00"=>0, @date+" 16:30"=>0,
+          @date+" 17:00"=>0, @date+" 17:30"=>0, @date+" 18:00"=>0, @date+" 18:30"=>0, @date+" 19:00"=>0, @date+" 19:30"=>0,
+           @date+" 20:00"=>0, @date+" 20:30"=>0, @date+" 21:00"=>0, @date+" 21:30"=>0, @date+" 22:00"=>0, @date+" 22:30"=>0,
+            @date+" 23:00"=>0, @date+" 23:30"=>0}
+      
+    end
+
+    #Sumplhrwnw o kathe hash me tis krathseis 
+    ids.each do |element|
+      reservations.each do |reservation|
+        if reservation.split('/')[0] == element["Name"]
+          element[reservation.split('/')[1]] =1
+        end
+      end
+    end
+    puts ids
+
+    
+    #Vriskw valid_fom kai valid_until gia kathe aithsh 
+    num = 0
+    valid_from = ""
+    valid_until = ""
+    ids.each do |element|
+      element.each do |key,value|
+        #puts key
+        #puts value
+        if num ==0
+          if value ==1
+            puts "mpika "
+            valid_from = key
+            puts valid_from
+            num += 1
+          end
+        else 
+          if value ==0
+            valid_until = key
+            #stelnw krathsh 
+            #element["Name"]
+            valid_from = valid_from + ":00 +0000"
+            valid_until = valid_until + ":00 +0000"
+            reserveNode(@node_list_uuids[element["Name"]],params[:user_slice],valid_from,valid_until)
+
+            puts "Tha kanw krathsh me valid_from"
+            puts valid_from
+            puts "kai valid_until"
+            puts valid_until
+            puts "Gia ton "+element["Name"] + "me uuid=" + @node_list_uuids[element["Name"]]
+            num = 0
+          end
+        end
+      end
+    end
+
+  redirect_to scheduler_path    
+  end
+
 end

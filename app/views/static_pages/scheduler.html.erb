@@ -9,7 +9,6 @@
         Your slices <span class="caret"></span>
       </a>
 
-
       <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
         <%
         @user_slices.each do |element|
@@ -18,6 +17,8 @@
         end
         %>
       </ul>
+
+      
     </div>
 
   <div class="container">
@@ -40,7 +41,13 @@
 </div>
     <div class="table-responsive">
 
+  
+   <%=form_tag reservation_path do%>
       
+
+      <%= select_tag(:user_slice, options_for_select(@user_slices)) %>
+      <%= select_date Date.today, prefix: :start_date %>
+
       <table class="table">
 
         <tr>
@@ -55,22 +62,20 @@
         <tr>
           <%iterate.each do |key, value|%>            
               <td>
-                <%=value%>
-                <%if value == "0"%>
-                  <%=check_box_tag 'example'%>
-                <%else%>
-                  <%=check_box_tag( 'example' ,disabled: true)%>
-                <%end%>  
+                <%=value%><%=check_box_tag "reservations[]",iterate.values[0]+"/"+@date+" "+key %>
+                
               </td>
           <%end%>
           </tr>
         <%end%>
       </table>
+      <%= submit_tag "Make reservations" %>
+<% end %>
+
     </div>
 
-    <%=check_box_tag 'example'%>
 
-    
+
 
     <div id = "sceduler_121">
       <h1>121</h1>

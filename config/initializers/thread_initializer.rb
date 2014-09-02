@@ -8,6 +8,8 @@ class Nodes
   y= []
   Nodes.class_variable_set(:@@node_list_names, y)
 
+  @@node_list_uuids = Hash.new
+
   def refresh_node_list
     x= []
     Nodes.class_variable_set(:@@node_list, x)
@@ -19,8 +21,13 @@ class Nodes
       if (element["hardware_type"].start_with? ("PC-"))
         @@node_list << element["name"].scan( /\d+$/ ).first
         @@node_list_names << element["name"]
+        @@node_list_uuids[element["name"]] = element["uuid"]
       end
     end
+  end
+
+  def get_node_list_uuids
+    return @@node_list_uuids 
   end
 
   def get_node_list_names

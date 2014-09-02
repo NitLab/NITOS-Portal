@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   match '/about',           to: 'static_pages#about',            via: 'get'
   match '/node_status',     to: 'static_pages#node_status',      via: 'get'
   match '/scheduler',       to: 'static_pages#scheduler',        via: 'get'
+  match '/reservation',     to: 'static_pages#reservation',      via: 'post'
   post 'static_pages/set_node_on' => 'static_pages#set_node_on'
   post 'static_pages/set_node_off' => 'static_pages#set_node_off'
   post 'static_pages/reset_node' => 'static_pages#reset_node'
