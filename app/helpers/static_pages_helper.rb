@@ -41,8 +41,15 @@ module StaticPagesHelper
 		leases = getLeases()
 		today_leases = []
 		leases.each do |lease|
-			if  lease["valid_from"].include?(date) || lease["valid_until"].include?(date)
-				today_leases << lease
+			if lease["status"] == "accepted"
+				puts "Gia na assssssssssssss"
+				puts lease["valid_from"].split('T')[0]
+				puts date
+				puts lease["valid_until"].split('T')[0]
+				if  lease["valid_from"].split('T')[0] <= date && lease["valid_until"].split('T')[0]>=date
+					puts "mpika"
+					today_leases << lease
+				end
 			end
 		end
 
