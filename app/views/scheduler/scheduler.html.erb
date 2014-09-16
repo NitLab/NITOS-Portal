@@ -1,0 +1,17 @@
+<% provide(:title, 'Scheduler') %>
+<h1>Scheduler</h1>
+
+<div class = "container">
+  <div class = "row">
+  
+    <%=form_tag('/reservation', method: :get) do%>
+      
+      <%= select_date Date.today, prefix: :start_date %>
+      <%= submit_tag "Select Date" %>
+    <% end %>
+
+  </div>
+</div>
+
+
+

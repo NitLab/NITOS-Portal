@@ -1,0 +1,98 @@
+<% provide(:title, 'Reservetion') %>
+<h1>Reservation</h1>
+
+<div class = "container">
+  <div class = "row">
+
+    <div class="dropdown">
+      <a id="dLabel" role="button" data-toggle="dropdown" data-target="#" href="/page.html">
+        Your slices <span class="caret"></span>
+      </a>
+
+      <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+        <%
+        @user_slices.each do |element|
+          puts element
+          %><li role = "presentation"><%=element%></li><%
+        end
+        %>
+      </ul>
+
+      
+    </div>
+
+  <div class="container">
+    <div class="row">
+        <div class='col-sm-6'>
+            <div class="form-group">
+                <div class='input-group date' id='datetimepicker1'>
+                    <input type='text' class="form-control" />
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript">
+            $(function () {
+                $('#datetimepicker1').datetimepicker();
+            });
+        </script>
+    </div>
+</div>
+    <div class="table-responsive">
+
+    <%=form_tag('/reservation', method: :get) do%>
+      
+      <%= select_date Date.parse(@date), prefix: :start_date %>
+      <%= submit_tag "Select Date" %>
+    <% end %>
+
+  
+  <h3>Reservation table for <%=@date%></h3>
+   <%=form_tag make_reservation_path do%>
+      
+      <%= select_tag(:user_slice, options_for_select(@user_slices)) %>
+
+      <table class="table">
+
+        <tr>
+        <%@reservation_table[0].each_key do |key|%>
+          <td><%=key%></td>
+        <%end%>
+        </tr>
+
+        <%@reservation_table.each do |iterate|%>
+        <tr>
+          <%iterate.each do |key, value|%>  
+              <%if key == "Name"%>
+                <td>
+                  <%=value%>                  
+                </td>
+              <%else%>  
+                <%if value == 1%>        
+                <td>
+                  
+                  <%=value%><%=check_box_tag "reservations[]",iterate.values[0]+"/"+@date+" "+key, false, disabled: true %>
+                  
+                </td>
+                <%else%>
+                <td>
+                  <%=value%><%=check_box_tag "reservations[]",iterate.values[0]+"/"+@date+" "+key %>
+                  
+                </td>
+                <%end%>
+              <%end%>
+          <%end%>
+          </tr>
+        <%end%>
+      </table>
+      <%= submit_tag "Make reservations" %>
+<% end %>
+
+    </div>
+
+  </div>
+</div>
+
+
+

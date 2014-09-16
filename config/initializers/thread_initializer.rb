@@ -1,4 +1,4 @@
-include StaticPagesHelper
+include NodeStatusHelper
 
 class Nodes
 

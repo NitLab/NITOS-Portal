@@ -8,13 +8,13 @@ Rails.application.routes.draw do
   match '/signout',         to: 'sessions#destroy',              via: 'delete'
   match '/your_ssh_keys',   to: 'static_pages#your_ssh_keys',    via: 'get'
   match '/about',           to: 'static_pages#about',            via: 'get'
-  match '/node_status',     to: 'static_pages#node_status',      via: 'get'
-  match '/scheduler',       to: 'static_pages#scheduler',        via: 'get'
-  match '/reservation',     to: 'static_pages#reservation',      via: 'get'
-  match '/make_reservation',to: 'static_pages#make_reservation', via: 'post'
-  post 'static_pages/set_node_on' => 'static_pages#set_node_on'
-  post 'static_pages/set_node_off' => 'static_pages#set_node_off'
-  post 'static_pages/reset_node' => 'static_pages#reset_node'
+  match '/node_status',     to: 'node_status#node_status',      via: 'get'
+  match '/scheduler',       to: 'scheduler#scheduler',        via: 'get'
+  match '/reservation',     to: 'scheduler#reservation',      via: 'get'
+  match '/make_reservation',to: 'scheduler#make_reservation', via: 'post'
+  post 'node_status/set_node_on' => 'node_status#set_node_on'
+  post 'node_status/set_node_off' => 'node_status#set_node_off'
+  post 'node_status/reset_node' => 'node_status#reset_node'
 
 
   # The priority is based upon order of creation: first created -> highest priority.

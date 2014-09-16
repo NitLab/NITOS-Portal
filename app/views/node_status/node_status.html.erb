@@ -1,0 +1,36 @@
+<% provide(:title, 'Node status') %>
+<h1>Node status</h1>
+
+<%
+require "httparty"
+require "json"
+
+%>
+
+<div class = "container">
+  <div class = "row">
+
+
+<div id = "node_status">
+<%
+@node_list.each do |element|%>
+  <div id = "node_<%=element%>" class = "nodes">
+  
+    <p><%=element%></p>
+    <p id = "node<%=element%>"></p>
+    
+    <%= button_to "OFF", {:action => "set_node_off", :controller => "node_status", :node_id => element} ,:id =>"off_"+element, :class => "btn btn-danger" , :remote => true, :disabled => false %>
+  
+    <%= button_to "ON", {:action => "set_node_on", :controller => "node_status", :node_id => element},:id =>"on_"+element, :class => "btn btn-primary", :remote => true, :disabled => true %>
+    <%= button_to "Reset", {:action => "reset_node", :controller => "node_status", :node_id => element},:id =>"reset"+element, :class => "btn", :remote => true, :disabled => true %>
+  </div>
+  <%
+end
+
+  %>
+    
+
+</div>
+
+</div>
+</div>
