@@ -42,12 +42,12 @@ module SchedulerHelper
     today_leases = []
     leases.each do |lease|
       if lease["status"] == "accepted"
-        puts "Gia na assssssssssssss"
-        puts lease["valid_from"].split('T')[0]
-        puts date
-        puts lease["valid_until"].split('T')[0]
+        #puts "Gia na assssssssssssss"
+        #puts lease["valid_from"].split('T')[0]
+        #puts date
+        #puts lease["valid_until"].split('T')[0]
         if  lease["valid_from"].split('T')[0] <= date && lease["valid_until"].split('T')[0]>=date
-          puts "mpika"
+          #puts "mpika"
           today_leases << lease
         end
       end

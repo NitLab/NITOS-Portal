@@ -72,12 +72,12 @@
                 <%if value == 1%>        
                 <td>
                   
-                  <%=value%><%=check_box_tag "reservations[]",iterate.values[0]+"/"+@date+" "+key, false, disabled: true %>
+                  <%=value%><%=check_box_tag "reservations[]",iterate.values[0]+"/"+key, false, disabled: true %>
                   
                 </td>
                 <%else%>
                 <td>
-                  <%=value%><%=check_box_tag "reservations[]",iterate.values[0]+"/"+@date+" "+key %>
+                  <%=value%><%=check_box_tag "reservations[]",iterate.values[0]+"/"+key %>
                   
                 </td>
                 <%end%>
