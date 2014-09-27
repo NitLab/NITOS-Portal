@@ -2,6 +2,28 @@ class SchedulerController < ApplicationController
 
   include SchedulerHelper
 
+  def unbound_requests
+    puts "make reservations unbound my friend"
+    @req = unboundRequest()
+    puts @req
+  end
+
+  def make_unbound_requests
+
+  end
+
+  def my_reservations
+
+    @slices = getSlices
+    @my_reservations = []
+    @slices.each do |slice|
+     this_slice_leases = getLeasesBySlice(slice)
+     if this_slice_leases.length !=0
+      @my_reservations <<this_slice_leases
+     end
+    end
+  end
+
   def scheduler 
     puts "Sxetika me tis wres"
     puts Time.zone.now
@@ -444,7 +466,7 @@ class SchedulerController < ApplicationController
   def make_reservation
     #Apo dw kai katw einai to palio resevation 
     node_obj = Nodes.new
-    @node_list_uuids = node_obj.get_node_list_uuids
+    node_list_uuids = node_obj.get_node_list_uuids
     # Vriskw poioi komvoi einai pros krathsh 
     ids = []
     reservations = params[:reservations]
@@ -552,6 +574,7 @@ class SchedulerController < ApplicationController
 
         
         #Vriskw valid_fom kai valid_until gia kathe aithsh 
+        array_with_reservations = []
         num = 0
         valid_from = ""
         valid_until = ""
@@ -574,8 +597,25 @@ class SchedulerController < ApplicationController
                 #element["Name"]
                 valid_from = valid_from + ":00 +0000"
                 valid_until = valid_until + ":00 +0000"
-                #reserveNode(@node_list_uuids[element["Name"]],params[:user_slice],valid_from,valid_until)
-
+                #reserveNode(node_list_uuids[element["Name"]],params[:user_slice],valid_from,valid_until)
+                
+                h = Hash.new
+                h = {"valid_from" => valid_from, "valid_until"=> valid_until, "resources"=> [node_list_uuids[element["Name"]]] }
+                if array_with_reservations.length == 0
+                  array_with_reservations << h
+                else
+                  flag = 0
+                  array_with_reservations.each do |reservation|
+                    if reservation["valid_from"] == valid_from && reservation["valid_until"] == valid_until && !reservation["resources"].include?(node_list_uuids[element["Name"]])
+                      reservation["resources"] << node_list_uuids[element["Name"]]
+                      flag =1
+                      break                      
+                    end
+                  end
+                  if flag == 0
+                    array_with_reservations << h
+                  end
+                end
                 # puts "Tha kanw krathsh me valid_from"
                 # puts valid_from
                 # puts "kai valid_until"
@@ -585,6 +625,13 @@ class SchedulerController < ApplicationController
               end
             end
           end
+        end
+        # puts ""
+        # puts "Auto einai to array me ta reservation pou prepei na ginoun"
+        # puts array_with_reservations
+
+        array_with_reservations.each do |reservation|
+          reserveNode(reservation["resources"],params[:user_slice],reservation["valid_from"],reservation["valid_until"])
         end
       redirect_to :back 
     end 

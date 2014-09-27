@@ -10,7 +10,8 @@ gem 'httparty'
 gem 'tubesock'
 gem 'thin'
 gem 'websocket-rails'
-gem 'bootstrap-sass'
+#gem 'font-awesome-less'
+#gem 'bootstrap-sass'
 # Use mysql as the database for Active Record
 
 
@@ -25,13 +26,13 @@ group :test do
   gem 'factory_girl_rails'
 end
 
-group :assets do
-  gem 'less'
-end
+# group :assets do
+#   gem 'less'
+# end
 
 gem 'therubyracer'
-gem 'less-rails' #Sprockets (what Rails 3.1 uses for its asset pipeline) supports LESS
-gem 'twitter-bootstrap-rails'
+# gem 'less-rails' #Sprockets (what Rails 3.1 uses for its asset pipeline) supports LESS
+# gem 'twitter-bootstrap-rails'
 
 
 # Use Uglifier as compressor for JavaScript assets
