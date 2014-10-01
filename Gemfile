@@ -10,7 +10,7 @@ gem 'httparty'
 gem 'tubesock'
 gem 'thin'
 gem 'websocket-rails'
-#gem 'font-awesome-less'
+#gem "font-awesome-rails"
 #gem 'bootstrap-sass'
 # Use mysql as the database for Active Record
 

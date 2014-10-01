@@ -15,9 +15,10 @@ Rails.application.routes.draw do
   match '/unbound_requests',      to: 'scheduler#unbound_requests',     via: 'get'
   match '/make_unbound_requests', to: 'scheduler#make_unbound_requests',via: 'get'
   match '/make_reservation',      to: 'scheduler#make_reservation',     via: 'post'
-  post 'node_status/set_node_on' => 'node_status#set_node_on'
-  post 'node_status/set_node_off' => 'node_status#set_node_off'
-  post 'node_status/reset_node' => 'node_status#reset_node'
+  post  'node_status/set_node_on'   => 'node_status#set_node_on'
+  post  'node_status/set_node_off'  => 'node_status#set_node_off'
+  post  'node_status/reset_node'    => 'node_status#reset_node'
+  delete  'scheduler/cancel_reservation' => 'scheduler#cancel_reservation'
 
 
   # The priority is based upon order of creation: first created -> highest priority.

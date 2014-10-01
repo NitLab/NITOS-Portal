@@ -12,16 +12,32 @@ class SchedulerController < ApplicationController
 
   end
 
+  # Dhmiourgw ena hash pou exei san key ta slices tou user kai san values tou kathe key enan pinaka me krathseis gia to kathe slice
   def my_reservations
-
+    @slices = []
     @slices = getSlices
-    @my_reservations = []
-    @slices.each do |slice|
-     this_slice_leases = getLeasesBySlice(slice)
-     if this_slice_leases.length !=0
-      @my_reservations <<this_slice_leases
-     end
+    puts @slices.inspect
+    @my_reservations = Hash.new
+    if @slices.length == 0
+      flash[:success] = "You must create your own slice for these feature...Create a slice and try again"
+    else      
+      @slices.each do |slice|
+        this_slice_leases = []
+        this_slice_leases = getLeasesBySlice(slice)
+        
+        @my_reservations[slice] = this_slice_leases
+        
+        puts "my reservations "
+        puts @my_reservations.inspect
+      end
     end
+  end
+
+  def cancel_reservation
+    lease_uuid = params[:lease_uuid]
+    puts lease_uuid
+    cancelReservation(lease_uuid)
+    redirect_to my_reservations_path
   end
 
   def scheduler 
@@ -29,13 +45,12 @@ class SchedulerController < ApplicationController
     puts Time.zone.now
     #puts Date.today.to_time_in_current_zone
     puts 1.day.from_now
-    #reserveNode("77879ad1-b6ee-419c-ae70-05c19f4ea745","ardadouk","2014-09-19 15:00:00 +0000","2014-09-19 19:00:00 +0000")
-    #reserveNode("77879ad1-b6ee-419c-ae70-05c19f4ea745","ardadouk","2014-09-19 20:00:00 +0000","2014-09-19 22:30:00 +0000")
-    #reserveNode("a1d43ca1-8798-4564-8a63-37dd95a15ded","ardadouk","2014-09-18 20:00:00 +0000","2014-09-20 22:30:00 +0000")
+    # reserveNode(["77879ad1-b6ee-419c-ae70-05c19f4ea745"],"ardadouk","2014-09-30 15:15:00 +0000","2014-09-30 19:15:00 +0000")
+    # reserveNode(["77879ad1-b6ee-419c-ae70-05c19f4ea745"],"ardadouk","2014-09-30 20:00:00 +0000","2014-09-30 22:30:00 +0000")
+    # reserveNode(["a1d43ca1-8798-4564-8a63-37dd95a15ded"],"ardadouk","2014-09-30 20:45:00 +0000","2014-09-30 22:45:00 +0000")
   end
 
   def reservation 
-    #reserveNode("77879ad1-b6ee-419c-ae70-05c19f4ea745","ardadouk","2014-09-18 15:00:00 +0000","2014-09-18 19:00:00 +0000")
     node_obj = Nodes.new
     @node_list = node_obj.get_node_list
     @node_list_names = node_obj.get_node_list_names
@@ -108,6 +123,9 @@ class SchedulerController < ApplicationController
           # puts time_from
           # puts time_until
           # puts @date
+
+          time_from = roundTimeFrom(time_from)
+          time_until = roundTimeUntil(time_until)
 
           #Auto me to prev einai proswrinh lush gia na apofeugw ta diplwtupa 
           prev_component = ""
@@ -208,6 +226,9 @@ class SchedulerController < ApplicationController
           # puts time_until
           # puts @date
 
+          time_from = roundTimeFrom(time_from)
+          time_until = roundTimeUntil(time_until)
+
           #Auto me to prev einai proswrinh lush gia na apofeugw ta diplwtupa 
           prev_component = ""
           tomorrow_lease["components"].each do |component|
@@ -301,14 +322,20 @@ class SchedulerController < ApplicationController
         @today_leases.each do |t_lease|
           date_from = t_lease["valid_from"].split('T')[0]
           date_until = t_lease["valid_until"].split('T')[0]
-          time_form = t_lease["valid_from"].split('T')[1][0...-4]
+          time_from = t_lease["valid_from"].split('T')[1][0...-4]
           time_until = t_lease["valid_until"].split('T')[1][0...-4]
           puts date_from
           puts date_until
-          puts time_form
+          puts time_from
           puts time_until
           puts @date
 
+          time_from = roundTimeFrom(time_from)
+          time_until = roundTimeUntil(time_until)
+
+          puts "Ta stroggulopoihmena times einai"
+          puts time_from
+          puts time_until
 
           prev_component = ""
           t_lease["components"].each do |component|
@@ -317,7 +344,7 @@ class SchedulerController < ApplicationController
                 iterate.each_key do |key|
                   if key != "Name"
                     key_time = key.split(" ")[1]
-                    if key_time >= time_form && key_time < time_until && key != "Name" 
+                    if key_time >= time_from && key_time < time_until && key != "Name" 
                       iterate[key] = 1
                     end
                   end
@@ -327,7 +354,7 @@ class SchedulerController < ApplicationController
                   iterate.each_key do |key|
                     if key != "Name"
                       key_time = key.split(" ")[1]
-                      if key_time >= time_form && key != "Name" 
+                      if key_time >= time_from && key != "Name" 
                         iterate[key] = 1
                       end
                     end

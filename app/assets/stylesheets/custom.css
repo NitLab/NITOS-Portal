@@ -105,15 +105,6 @@ footer {
 
 /* forms */
 
-input, textarea, select, .uneditable-input {
-  border: 1px solid #bbb;
-  width: 100%;
-  margin-bottom: 15px;
-}
-
-input {
-  height: auto !important;
-}
 
 #error_explanation {
   color: #f00;
@@ -121,6 +112,70 @@ input {
  #error_explanation ul {
     list-style: none;
     margin: 0 0 18px 0;
+}
+
+.form-signin {
+    background: none repeat scroll 0 0 #fff;
+    border-radius: 5px;   
+    padding: 0px;
+    max-width: 330px;
+}
+
+.form-signin h2.form-signin-heading {
+    background: none repeat scroll 0 0 #41cac0;
+    border-radius: 5px 5px 0 0;
+    color: #fff;
+    font-family: "Open Sans",sans-serif;
+    font-size: 18px;
+    font-weight: 300;
+    margin: 0;
+    padding: 20px 15px;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.form-signin p {
+    color: #b6b6b6;
+    font-size: 16px;
+    font-weight: 300;
+    text-align: center;
+}
+
+.form-signin input[type="text"], .form-signin input[type="password"] {
+    border: 1px solid #eaeaea;
+    border-radius: 5px;
+    box-shadow: none;
+    font-size: 12px;
+    margin-bottom: 15px;
+}
+
+.form-signin .form-control {
+    font-size: 16px;
+    height: auto;
+    padding: 10px;
+    position: relative;
+}
+
+.login-wrap {
+    padding: 20px;
+}
+
+.form-signin .btn-login {
+    background: none repeat scroll 0 0 #f67a6e;
+    box-shadow: 0 4px #e56b60;
+    color: #fff;
+    font-family: "Open Sans",sans-serif;
+    font-weight: 300;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+}
+
+.form-signin a {
+    color: #41cac0;
+}
+a, a:hover, a:focus {
+    outline: medium none;
+    text-decoration: none;
 }
 
 /*node status*/
