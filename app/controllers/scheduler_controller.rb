@@ -3,13 +3,81 @@ class SchedulerController < ApplicationController
   include SchedulerHelper
 
   def unbound_requests
+    
+    node_obj = Nodes.new
+    @node_list = node_obj.get_node_list
+    #@node_list_names = node_obj.get_node_list_names
+    @user_slices = getSlices()
+
     puts "make reservations unbound my friend"
-    @req = unboundRequest()
-    puts @req
+    @mapping_result = []
+    if params.has_key?("resource_response")
+      @mapping_result = params["resource_response"]["resources"]
+    end
+    puts @mapping_result
+    #@req = unboundRequest()
+    #puts @req
   end
 
   def make_unbound_requests
+    puts params
+    puts params[:user_slice]
+    puts params[:type1]
+    puts params[:number_t1]
+    puts params[:type2]
+    puts params[:number_t2]
+    puts params[:duration_t1]
+    puts params[:valid_from]
 
+    if params[:user_slice] == "" || params[:type1] == "" || params[:number_t1] == ""
+      flash[:danger] = "Slice , type and number fields must not be blank"
+    else
+      mapping_result = unboundRequest(params)
+      puts "H sunarthsh mou epestrepse "
+      puts mapping_result
+    end
+
+    redirect_to unbound_requests_path(mapping_result)
+  end
+
+  def confirm_reservations
+    puts "Auta einai ta params"
+    puts params[:user_slice]
+    puts params[:reservations].inspect
+
+    reservations = []
+    params[:reservations].each do |element|
+      reservations << eval(element) 
+    end
+
+    array_with_reservations = []
+    reservations.each do |element|
+
+      h = Hash.new
+      h = {"valid_from" => element["valid_from"], "valid_until"=> element["valid_until"], "resources"=> [element["uuid"]] }
+      if array_with_reservations.length == 0
+        array_with_reservations << h
+      else
+        flag = 0
+        array_with_reservations.each do |reservation|
+          if reservation["valid_from"] == element["valid_from"] && reservation["valid_until"] == element["valid_until"] && !reservation["resources"].include?(element["uuid"])
+            reservation["resources"] << element["uuid"]
+            flag =1
+            break 
+          end                     
+        end
+      end
+      if flag == 0
+        array_with_reservations << h
+      end
+    end
+
+    puts array_with_reservations
+
+    array_with_reservations.each do |reservation|
+          reserveNode(reservation["resources"],params[:user_slice],reservation["valid_from"],reservation["valid_until"])
+    end
+    redirect_to unbound_requests_path
   end
 
   # Dhmiourgw ena hash pou exei san key ta slices tou user kai san values tou kathe key enan pinaka me krathseis gia to kathe slice

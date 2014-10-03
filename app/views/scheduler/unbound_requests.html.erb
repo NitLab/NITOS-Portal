@@ -1,4 +1,84 @@
 <% provide(:title, 'Unbound Requests') %>
 <h1>Unbound Requests</h1>
-<%=@req%>
 
+<div class = "row">
+  <div class = "col-md-10">
+    <%=form_tag make_unbound_requests_path do%>
+      <p>Select Slice</p>
+      <%= select_tag(:user_slice, options_for_select(@user_slices)) %>
+
+      <p>Select Type</p>
+      
+      <%= select_tag(:type1, options_for_select([['Node', "Node"],['Channel',"Channel"]],"Node"), class:"form-control") %>
+
+      <%= number_field_tag(:number_t1,nil, in: 1...20, step: 1) %>
+
+      <p>Choose duraction</p>
+      <%= select_tag(:duration_t1, options_for_select([['00:30', 1800],['1:00',3600]],"00:30"), class:"form-control") %>
+
+      <p>Select Type</p>
+
+      <%= select_tag(:type2, options_for_select([['Node', "Node"],['Channel',"Channel"]]), include_blank: true, class:"form-control") %>
+
+      <%= number_field_tag(:number_t2, nil, in: 0...20, step: 1) %>
+
+      <p>Choose duraction</p>
+      <%= select_tag(:duration_t2, options_for_select([['00:30', 1800],['1:00',3600]],"00:30"), class:"form-control") %>
+
+      <%= datetime_local_field_tag(:valid_from, nil, min: Date.today ) %>
+      <div><%= submit_tag "Find resources" %></div>
+      
+
+    <%end%>
+
+  </div>
+</div>
+
+<%if @mapping_result.length != 0%>
+
+  <p>Mapping submodule response</p>
+
+  
+
+  <div class="table-responsive">
+    <table class="table table-hover table-bordered">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>From</th>
+          <th>Until</th>
+          <th>Resource</th>
+          <th>Type</th>
+          <th>Domain</th>
+        </tr>
+      </thead>
+
+      <%reservation_num = 1%>
+      <%@mapping_result.each do |element|%>
+        <tbody>              
+          <tr>
+            <td><%=reservation_num%></td>
+            <td> <%= element["valid_from"]%> </td>
+            <td> <%= element["valid_until"]%> </td>
+            <td> <%= element["urn"]%> </td>
+            <td> <%= element["type"]%> </td>
+            <td> <%= element["domain"]%> </td>
+          </tr>
+          <%reservation_num += 1%>                    
+        </tbody>
+      <%end%>
+    </table>
+  </div>  
+
+  
+  <%=@mapping_result%>
+  <%=form_tag confirm_reservations_path do%>
+    <%= select_tag(:user_slice, options_for_select(@user_slices)) %>
+    <%@mapping_result.each do |result|%>
+      <%= hidden_field_tag "reservations[]", result %>
+    <%end%>
+    <div><%= submit_tag "Confirm Reservations"%></div>
+  <%end%>
+
+  
+<%end%>
