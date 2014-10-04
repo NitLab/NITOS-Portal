@@ -20,8 +20,6 @@ Rails.application.routes.draw do
   post  'node_status/set_node_off'  => 'node_status#set_node_off'
   post  'node_status/reset_node'    => 'node_status#reset_node'
   delete  'scheduler/cancel_reservation' => 'scheduler#cancel_reservation'
-  post  'scheduler/confirm_reservations'    => 'scheduler#confirm_reservations'
-
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

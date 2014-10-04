@@ -1,84 +1,196 @@
 <% provide(:title, 'Unbound Requests') %>
-<h1>Unbound Requests</h1>
 
 <div class = "row">
-  <div class = "col-md-10">
-    <%=form_tag make_unbound_requests_path do%>
-      <p>Select Slice</p>
-      <%= select_tag(:user_slice, options_for_select(@user_slices)) %>
+  <div class = "col-lg-12">    
+      <section class = "panel ">
+        <header class="panel-heading"> Unbound Requests </header>
 
-      <p>Select Type</p>
-      
-      <%= select_tag(:type1, options_for_select([['Node', "Node"],['Channel',"Channel"]],"Node"), class:"form-control") %>
+        <div class = "panel-body">
 
-      <%= number_field_tag(:number_t1,nil, in: 1...20, step: 1) %>
+          <div class = "stepy-tab">
+            <ul id="default-titles" class="stepy-titles clearfix">
+              <%if @mapping_result.length != 0%>
+                <li id="default-title-0" class="">
+                  <div>Step1</div>
+                  <span> </span>
+                </li>
 
-      <p>Choose duraction</p>
-      <%= select_tag(:duration_t1, options_for_select([['00:30', 1800],['1:00',3600]],"00:30"), class:"form-control") %>
+                <li id="default-title-1" class="current-step">
+                  <div>Step 2</div>
+                  <span> </span>
+                </li>
+              <%else%>  
+                <li id="default-title-0" class="current-step">
+                  <div>Step1</div>
+                  <span> </span>
+                </li>
 
-      <p>Select Type</p>
+                <li id="default-title-1" class="">
+                  <div>Step 2</div>
+                  <span> </span>
+                </li>
+              <%end%>
 
-      <%= select_tag(:type2, options_for_select([['Node', "Node"],['Channel',"Channel"]]), include_blank: true, class:"form-control") %>
+            </ul>
+          </div>
 
-      <%= number_field_tag(:number_t2, nil, in: 0...20, step: 1) %>
+          <%=form_tag make_unbound_requests_path, :id => "default", :class => "form-horizontal" do%>
 
-      <p>Choose duraction</p>
-      <%= select_tag(:duration_t2, options_for_select([['00:30', 1800],['1:00',3600]],"00:30"), class:"form-control") %>
+          <%if @mapping_result.length != 0%>
+            <fieldset id="default-step-0" class="step" style="display: none;">
+          <%else%>
+            <fieldset id="default-step-0" class="step" style="display: block;">
+          <%end%>
+            
+              <legend> </legend>
 
-      <%= datetime_local_field_tag(:valid_from, nil, min: Date.today ) %>
-      <div><%= submit_tag "Find resources" %></div>
-      
+              <div class = "form-group">
+                <label class="col-lg-2 control-label">Select Type <span class="required">(*)</span></label>
+                 
+                <div class = "col-lg-10">            
+                  <%= select_tag(:type1, options_for_select([['Node', "Node"],['Channel',"Channel"]],"Node"), class:"form-control") %>
+                </div>
+              </div>
 
-    <%end%>
+              <div class = "form-group">
+                <label class="col-lg-2 control-label">Choose number <span class="required">(*)</span></label>
+                <div class = "col-lg-10">
+                  <%= number_field_tag(:number_t1,nil, in: 1...20, step: 1) %>
+                </div>
+              </div>
+
+              <div class = "form-group">
+                <label class="col-lg-2 control-label">Choose duration</label>
+                <div class = "col-lg-10">
+                  <%= select_tag(:duration_t1, options_for_select([['00:30', 1800],['1:00',3600]],"00:30"), class:"form-control") %>
+                </div>  
+              </div>
+
+              <div class = "form-group">
+                <label class="col-lg-2 control-label">Select Type</label>
+                <div class = "col-lg-10">
+                  <%= select_tag(:type2, options_for_select([['Node', "Node"],['Channel',"Channel"]]), include_blank: true, class:"form-control") %>
+                </div>  
+              </div>
+
+              <div class = "form-group">
+                <label class="col-lg-2 control-label">Choose number</label>
+                <div class = "col-lg-10">
+                  <%= number_field_tag(:number_t2, nil, in: 0...20, step: 1) %>
+                </div>
+              </div>
+
+              <div class = "form-group">
+                <label class="col-lg-2 control-label">Choose duration</label>
+                <div class = "col-lg-10">
+                  <%= select_tag(:duration_t2, options_for_select([['00:30', 1800],['1:00',3600]],"00:30"), class:"form-control") %>
+                </div>  
+              </div>
+
+              <div class = "form-group">
+                <label class="col-lg-2 control-label">Valid from</label>
+                <div class = "col-lg-10">              
+                  <%= datetime_local_field_tag(:valid_from, nil, min: Date.today ) %>
+                </div>  
+              </div>
+
+              <div class = "form-group">
+                <label class="col-lg-2 control-label">Valid until</label>
+                <div class = "col-lg-10">               
+                  <%= datetime_local_field_tag(:valid_from, nil, min: Date.today ) %>
+                </div>
+              </div>
+                <div><%= submit_tag "Find resources" , class:"btn btn-danger btn-submit" %></div>
+
+                <label class="col-lg-2 control-label"><span class = "required">(*): Required</span></label>
+            </fieldset> 
+          <%end%>
+
+            
+
+              
+              <%if @mapping_result.length != 0%> 
+              <fieldset id="default-step-1" class="step" style="display: block;">
+                <%=form_tag confirm_reservations_path do%>
+                  <label id="slice-label">Choose slice</label>
+                  <%= select_tag(:user_slice, options_for_select(@user_slices)) %>
+                  <div class = "wrap-response"> 
+                    <p>Mapping submodule response</p>
+                    <div class="table-responsive">
+                      <table class="table table-hover table-bordered">
+                        <thead>
+                          <tr>
+                            <th>#</th>
+                            <th>From</th>
+                            <th>Until</th>
+                            <th>Resource</th>
+                            <th>Type</th>
+                            <th>Domain</th>
+                          </tr>
+                        </thead>
+
+                        <%reservation_num = 1%>
+                        <%@mapping_result.each do |element|%>
+                          <tbody>              
+                            <tr>
+                              <td><%=reservation_num%></td>
+                              <td> <%= element["valid_from"]%> </td>
+                              <td> <%= element["valid_until"]%> </td>
+                              <td> <%= element["urn"]%> </td>
+                              <td> <%= element["type"]%> </td>
+                              <td> <%= element["domain"]%> </td>
+                            </tr>
+                            <%reservation_num += 1%>                    
+                          </tbody>
+                        <%end%>
+                      </table>
+                    </div>  
+                  </div>
+                
+                  <%@mapping_result.each do |result|%>
+                    <%= hidden_field_tag "reservations[]", result %>
+                  <%end%>
+                  <div><%= submit_tag "Confirm Reservations",  class:"btn btn-danger btn-submit"%></div>
+                <%end%>
+              <%else%>
+                <fieldset id="default-step-1" class="step" style="display: none;">
+                <p>Mapping submodule: no response</p>
+              <%end%>
+            </fieldset> 
+          
+        </div>
+      </section>
+    
 
   </div>
 </div>
 
-<%if @mapping_result.length != 0%>
 
-  <p>Mapping submodule response</p>
-
-  
-
-  <div class="table-responsive">
-    <table class="table table-hover table-bordered">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>From</th>
-          <th>Until</th>
-          <th>Resource</th>
-          <th>Type</th>
-          <th>Domain</th>
-        </tr>
-      </thead>
-
-      <%reservation_num = 1%>
-      <%@mapping_result.each do |element|%>
-        <tbody>              
-          <tr>
-            <td><%=reservation_num%></td>
-            <td> <%= element["valid_from"]%> </td>
-            <td> <%= element["valid_until"]%> </td>
-            <td> <%= element["urn"]%> </td>
-            <td> <%= element["type"]%> </td>
-            <td> <%= element["domain"]%> </td>
-          </tr>
-          <%reservation_num += 1%>                    
-        </tbody>
-      <%end%>
-    </table>
-  </div>  
-
-  
-  <%=@mapping_result%>
-  <%=form_tag confirm_reservations_path do%>
-    <%= select_tag(:user_slice, options_for_select(@user_slices)) %>
-    <%@mapping_result.each do |result|%>
-      <%= hidden_field_tag "reservations[]", result %>
-    <%end%>
-    <div><%= submit_tag "Confirm Reservations"%></div>
-  <%end%>
-
+<%if @mapping_result.length != 0%>  
   
 <%end%>
+
+
+<script>
+  $(document).ready(function(){
+    
+
+    $("#default-title-0").click(function(){
+      $(this).attr("class","current-step");
+      $("#default-title-1").attr("class","");
+      
+      $("#default-step-0").attr("style","display: block;");
+      $("#default-step-1").attr("style","display: none;");
+      
+    });
+
+    $("#default-title-1").click(function(){
+      $(this).attr("class","current-step");
+      $("#default-title-0").attr("class","");
+      
+      $("#default-step-0").attr("style","display: none;");
+      $("#default-step-1").attr("style","display: block;");
+    });
+    
+  });
+</script>

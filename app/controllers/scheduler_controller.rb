@@ -9,7 +9,6 @@ class SchedulerController < ApplicationController
     #@node_list_names = node_obj.get_node_list_names
     @user_slices = getSlices()
 
-    puts "make reservations unbound my friend"
     @mapping_result = []
     if params.has_key?("resource_response")
       @mapping_result = params["resource_response"]["resources"]
@@ -21,7 +20,7 @@ class SchedulerController < ApplicationController
 
   def make_unbound_requests
     puts params
-    puts params[:user_slice]
+    #puts params[:user_slice]
     puts params[:type1]
     puts params[:number_t1]
     puts params[:type2]
@@ -29,7 +28,7 @@ class SchedulerController < ApplicationController
     puts params[:duration_t1]
     puts params[:valid_from]
 
-    if params[:user_slice] == "" || params[:type1] == "" || params[:number_t1] == ""
+    if params[:type1] == "" || params[:number_t1] == ""
       flash[:danger] = "Slice , type and number fields must not be blank"
     else
       mapping_result = unboundRequest(params)
@@ -39,6 +38,7 @@ class SchedulerController < ApplicationController
 
     redirect_to unbound_requests_path(mapping_result)
   end
+
 
   def confirm_reservations
     puts "Auta einai ta params"
@@ -731,4 +731,5 @@ class SchedulerController < ApplicationController
       redirect_to :back 
     end 
   end
+
 end

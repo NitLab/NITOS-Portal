@@ -1,115 +1,114 @@
 <% provide(:title, 'My_Reservations') %>
-<h1>My Reservations</h1>
 
 <div class = "row">
-  <div class = "col-md-10">
+  <div class = "col-lg-12">
+    <section class = "panel ">
+      <header class="panel-heading"> My Reservations </header>
+      <div class = "panel-body">
 
-    <!-- Nav tabs -->
-    <ul class="nav nav-tabs" role="tablist">
-      <%@my_reservations.each_key do |key|%>
-        <%if key == @my_reservations.keys[0]%>
-          <li class = "active"><a href="#<%=key%>" role="tab" data-toggle="tab"><%=key%></a></li>
-        <%else%>
-          <li><a href="#<%=key%>" role="tab" data-toggle="tab"><%=key%></a></li>
-        <%end%>
-      <%end%>
-    </ul>
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" role="tablist">
+          <%@my_reservations.each_key do |key|%>
+            <%if key == @my_reservations.keys[0]%>
+              <li class = "active"><a href="#<%=key%>" role="tab" data-toggle="tab"><%=key%></a></li>
+            <%else%>
+              <li><a href="#<%=key%>" role="tab" data-toggle="tab"><%=key%></a></li>
+            <%end%>
+          <%end%>
+        </ul>
 
-    <!-- Tab panes -->
-    <div class="tab-content">
-      <%@my_reservations.each do |key,value|%>
-        <%if key == @my_reservations.keys[0]%>
-          <div class="tab-pane fade in active" id="<%=key%>">
-            <%if value.length !=0 %>
-              <div class="table-responsive">
-                <table class="table table-hover table-bordered">
+        <!-- Tab panes -->
+        <div class="tab-content">
+          <%@my_reservations.each do |key,value|%>
+            <%if key == @my_reservations.keys[0]%>
+              <div class="tab-pane fade in active" id="<%=key%>">
+                <%if value.length !=0 %>
+                  <div class="table-responsive">
+                    <table class="table table-hover table-bordered">
 
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>From</th>
-                      <th>Until</th>
-                      <th>Resources</th>
-                      <th>Type</th>
-                      <th>Cancel</th>
-                    </tr>
-                  </thead>
+                      <thead>
+                        <tr>
+                          <th>#</th>
+                          <th>From</th>
+                          <th>Until</th>
+                          <th>Resources</th>
+                          <th>Type</th>
+                          <th>Cancel</th>
+                        </tr>
+                      </thead>
 
-                  <tbody>
-                    <%reservation_num = 1%>
-                    <%value.each do |reservation|%>
-                      <tr>
-                        <td><%=reservation_num%></td>
-                        <td> <%= reservation["valid_from"]%> </td>
-                        <td> <%= reservation["valid_until"]%> </td>
-                        <td> 
-                          <% reservation["components"].each do |element|%>
-                            <%=element["component"]["name"]%>
-                          <%end%>
-                        </td>
-                        <td> <%= reservation["components"][0]["component"]["type"]%> </td>
-                        <td> <%= button_to "Cancel", {:action => "cancel_reservation", :controller => "scheduler", :lease_uuid => reservation["uuid"]},:id =>"cancel"+reservation["uuid"], :class => "btn", :method => "delete"%> </td>
-                      </tr>
-                      <%reservation_num += 1%>
-                    <%end%>
-                  </tbody>
+                      <tbody>
+                        <%reservation_num = 1%>
+                        <%value.each do |reservation|%>
+                          <tr>
+                            <td><%=reservation_num%></td>
+                            <td> <%= reservation["valid_from"]%> </td>
+                            <td> <%= reservation["valid_until"]%> </td>
+                            <td> 
+                              <% reservation["components"].each do |element|%>
+                                <%=element["component"]["name"]%>
+                              <%end%>
+                            </td>
+                            <td> <%= reservation["components"][0]["component"]["type"]%> </td>
+                            <td> <%= button_to "Cancel", {:action => "cancel_reservation", :controller => "scheduler", :lease_uuid => reservation["uuid"]},:id =>"cancel"+reservation["uuid"], :class => "btn btn-danger btn-cancel", :method => "delete"%> </td>
+                          </tr>
+                          <%reservation_num += 1%>
+                        <%end%>
+                      </tbody>
 
-                </table>
+                    </table>
+                  </div>
+                <%else%>
+                  There is no reservations for slice: <%=key%>  
+                <%end%>  
               </div>
             <%else%>
-              There is no reservations for slice: <%=key%>  
-            <%end%>  
-          </div>
-        <%else%>
-          <div class="tab-pane fade" id="<%=key%>">
-            <%if value.length !=0 %>
-              <div class="table-responsive">
-                <table class="table table-hover table-bordered">
+              <div class="tab-pane fade" id="<%=key%>">
+                <%if value.length !=0 %>
+                  <div class="table-responsive">
+                    <table class="table table-hover table-bordered">
 
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>From</th>
-                      <th>Until</th>
-                      <th>Resources</th>
-                      <th>Type</th>
-                      <th>Cancel</th>
-                    </tr>
-                  </thead>
+                      <thead>
+                        <tr>
+                          <th>#</th>
+                          <th>From</th>
+                          <th>Until</th>
+                          <th>Resources</th>
+                          <th>Type</th>
+                          <th>Cancel</th>
+                        </tr>
+                      </thead>
 
-                  <tbody>
-                    <%reservation_num = 1%>
-                    <%value.each do |reservation|%>
-                      <tr>
-                        <td><%=reservation_num%></td>
-                        <td> <%= reservation["valid_from"]%> </td>
-                        <td> <%= reservation["valid_until"]%> </td>
-                        <td> 
-                          <% reservation["components"].each do |element|%>
-                            <%=element["component"]["name"]%>
-                          <%end%>
-                        </td>
-                        <td> <%= reservation["components"][0]["component"]["type"]%> </td>
-                        <td> <%= button_to "Cancel", {:action => "cancel_reservation", :controller => "scheduler", :lease_uuid => reservation["uuid"]},:id =>"cancel"+reservation["uuid"], :class => "btn", :method => "delete"%> </td>
-                      </tr>
-                      <%reservation_num += 1%>
-                    <%end%>
-                  </tbody>
+                      <tbody>
+                        <%reservation_num = 1%>
+                        <%value.each do |reservation|%>
+                          <tr>
+                            <td><%=reservation_num%></td>
+                            <td> <%= reservation["valid_from"]%> </td>
+                            <td> <%= reservation["valid_until"]%> </td>
+                            <td> 
+                              <% reservation["components"].each do |element|%>
+                                <%=element["component"]["name"]%>
+                              <%end%>
+                            </td>
+                            <td> <%= reservation["components"][0]["component"]["type"]%> </td>
+                            <td> <%= button_to "Cancel", {:action => "cancel_reservation", :controller => "scheduler", :lease_uuid => reservation["uuid"]},:id =>"cancel"+reservation["uuid"], :class => "btn btn-danger btn-cancel", :method => "delete"%> </td>
+                          </tr>
+                          <%reservation_num += 1%>
+                        <%end%>
+                      </tbody>
 
-                </table>
+                    </table>
+                  </div>
+                <%else%>
+                  There is no reservations for slice: <%=key%>  
+                <%end%>  
               </div>
-            <%else%>
-              There is no reservations for slice: <%=key%>  
-            <%end%>  
-          </div>
-
-
-        <%end%>        
-      <%end%>
-    </div>
-
-
-      
+            <%end%>        
+          <%end%>
+        </div>
+      </div><!-- End of panel-->
+    </section>
   </div>
 </div>
 

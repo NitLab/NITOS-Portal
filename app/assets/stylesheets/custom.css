@@ -91,6 +91,7 @@ footer {
   position: absolute;
   width: 100%;
   text-align: center;
+  display: none;
 
 }
 
@@ -206,4 +207,126 @@ a, a:hover, a:focus {
   position: fixed;
   width: 210px;
 
+}
+
+/*Unboun Requests*/
+
+.panel-heading {
+    border-color: #eff2f7;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.stepy-tab {
+    text-align: center;
+}
+
+.stepy-tab ul {
+    display: inline-block;
+}
+
+.stepy-tab ul li {
+    float: left;
+}
+
+.stepy-titles li {
+    color: #757575;
+    cursor: pointer;
+    float: left;
+    margin: 10px 15px;
+}
+
+ul li {
+    list-style: none outside none;
+}
+
+.stepy-titles li.current-step div {
+    background: none repeat scroll 0 0 #a9d86e;
+    border-radius: 50%;
+    color: #fff;
+    cursor: auto;
+    height: 100px;
+    line-height: 100px;
+    width: 100px;
+}
+
+.stepy-titles li div {
+    background: none repeat scroll 0 0 #eee;
+    border-radius: 50%;
+    font-size: 16px;
+    font-weight: 300;
+    height: 100px;
+    line-height: 100px;
+    width: 100px;
+}
+
+.stepy-titles li span {
+    display: block;
+}
+
+.step {
+  clear:  left;
+}
+
+.step legend {
+    border: medium none;
+}
+
+.step label {
+    display: block;
+}
+
+.form-horizontal .control-label{
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+} 
+
+.btn-submit{
+    text-decoration: none;
+    background-color: #ff6c60;
+    border-color: #ff6c60;
+    color: #ffffff;
+    float: right;
+}
+
+.btn-submit:hover {
+  background-color: #ff6c60;
+  border-color: #ff6c60;
+  text-decoration: none;
+}
+
+#slice-label{
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+} 
+
+.wrap-response{
+  margin-top: 20px;
+}
+
+.required{
+  color: #ff6c60;
+}
+
+/*My Reservations*/
+
+#cancel-buuton{
+  float: none;
+}
+
+.button_to .btn-cancel{
+    text-decoration: none;
+    background-color: #ff6c60;
+    border-color: #ff6c60;
+    color: #ffffff;
+    float: right;
+    margin-right: 22px;
+}
+
+.btn-cancel:hover, .btn-cancel:focus, .btn-cancel:active, .btn-cancel.active {
+  background-color: #ff6c60;
+  border-color: #ff6c60;
+  text-decoration: none;
 }
