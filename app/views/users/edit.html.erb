@@ -1,25 +1,26 @@
 <% provide(:title, "Edit user") %>
-<h1>Update your profile</h1>
 
 <div class="row">
-  <div class="span6 offset3">
-    <%= form_for(@user) do |f| %>
-      <%= render 'shared/error_messages' %>
+  <div class = "col-xm-3 col-sm-5 col-sm-offset-4 col-md-4 col-md-offset-4 form-signin">
+    <%= form_for @user, :html =>{:class => "form-signin" } do |f| %>
+      <h2 class = "form-signin-heading" >update your profile</h2>
 
-      <%= f.label :name %>
-      <%= f.text_field :name %>
+      <div class = "login-wrap">
 
-      <%= f.label :email %>
-      <%= f.text_field :email %>
+        <%= render 'shared/error_messages' %>
 
-      <%= f.label :password %>
-      <%= f.password_field :password %>
+        <p> Enter your updated account details below</p>
+       
+        <%= f.text_field :name, class: "form-control", autofocus: "", placeholder: "User Name" %>
+        
+        <%= f.text_field :email, class: "form-control", autofocus: "", placeholder: "Email" %>
+        
+        <%= f.password_field :password, class: "form-control", autofocus: "", placeholder: "Password" %>
+        
+        <%= f.password_field :password_confirmation, class: "form-control", autofocus: "", placeholder: "Re-type Password" %>
 
-      <%= f.label :password_confirmation, "Confirm Password" %>
-      <%= f.password_field :password_confirmation %>
-
-      <%= f.submit "Save changes", class: "btn btn-large btn-primary" %>
+        <%= f.submit "Save changes", class: "btn btn-lg btn-login btn-block" %>
+      </div> 
     <% end %>
   </div>
 </div>
-

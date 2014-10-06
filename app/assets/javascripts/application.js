@@ -13,6 +13,8 @@
 //= require jquery
 //= require jquery_ujs
 //= require bootstrap.min
+//= require moment
+//= require bootstrap-datetimepicker
 //= require turbolinks
 //= require_tree .
 //= require websocket_rails/main
@@ -24,14 +26,14 @@ channel = dispatcher.subscribe('nodes');
 var temp = 'status'
 channel.bind(temp, function(temp) {
   var node = temp["node"];
-  $("#node"+node).html(temp["response"]+"!");
+  //$("#node"+node).html(temp["response"]+"!");
   if (temp["response"] == "on"){
-  	$("#node_"+node).css("background", "#00FFCC");
+  	$("#node_"+node).css("background", "#4ccabf");
     $("#on_"+node).prop('disabled', true);
     $("#off_"+node).prop('disabled', false);
     $("#reset"+node).prop('disabled', false);
   }else if(temp["response"] == "off"){
-  	$("#node_"+node).css("background", "#989898 ");
+  	$("#node_"+node).css("background", "#bec3c7 ");
     $("#on_"+node).prop('disabled', false);
     $("#off_"+node).prop('disabled', true);
     $("#reset"+node).prop('disabled', true);

@@ -59,10 +59,23 @@
                 </div>
               </div>
 
+              <%
+                duration_values = Array.new(8){Array.new(2,0)}
+                duration_sec = 0
+                (1..8).each do |n|
+                  if (n % 2 == 0) 
+                    duration_values[n-1][0] = "#{n<20 ? "0#{n / 2}" : n / 2}:00"
+                  else
+                    duration_values[n-1][0] =  "#{n<20 ? "0#{n / 2}" : n / 2}:30"
+                  end
+                  duration_values[n-1][1] = n * 1800
+                end
+              %>
+
               <div class = "form-group">
                 <label class="col-lg-2 control-label">Choose duration</label>
                 <div class = "col-lg-10">
-                  <%= select_tag(:duration_t1, options_for_select([['00:30', 1800],['1:00',3600]],"00:30"), class:"form-control") %>
+                  <%= select_tag(:duration_t1, options_for_select(duration_values,"00:30"), class:"form-control") %>
                 </div>  
               </div>
 
@@ -83,23 +96,32 @@
               <div class = "form-group">
                 <label class="col-lg-2 control-label">Choose duration</label>
                 <div class = "col-lg-10">
-                  <%= select_tag(:duration_t2, options_for_select([['00:30', 1800],['1:00',3600]],"00:30"), class:"form-control") %>
+                  <%= select_tag(:duration_t2, options_for_select(duration_values,"00:30"), class:"form-control") %>
                 </div>  
               </div>
 
               <div class = "form-group">
                 <label class="col-lg-2 control-label">Valid from</label>
-                <div class = "col-lg-10">              
-                  <%= datetime_local_field_tag(:valid_from, nil, min: Date.today ) %>
-                </div>  
+                <div class = "col-md-5">               
+                  <div class='input-group date' id='datetimepicker9'>
+                    <input type='text' class="form-control" />
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                  </div>
+                </div>
               </div>
 
               <div class = "form-group">
                 <label class="col-lg-2 control-label">Valid until</label>
-                <div class = "col-lg-10">               
-                  <%= datetime_local_field_tag(:valid_from, nil, min: Date.today ) %>
+                <div class = "col-md-5">               
+                  <div class='input-group date' id='datetimepicker10'>
+                    <input type='text' class="form-control" />
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                  </div>
                 </div>
               </div>
+
                 <div><%= submit_tag "Find resources" , class:"btn btn-danger btn-submit" %></div>
 
                 <label class="col-lg-2 control-label"><span class = "required">(*): Required</span></label>
@@ -194,3 +216,17 @@
     
   });
 </script>
+
+<script type="text/javascript">
+  $(function () {
+    $('#datetimepicker9').datetimepicker();
+    $('#datetimepicker10').datetimepicker();
+    $("#datetimepicker9").on("dp.change",function (e) {
+      $('#datetimepicker10').data("DateTimePicker").setMinDate(e.date);
+    });
+    $("#datetimepicker10").on("dp.change",function (e) {
+      $('#datetimepicker9').data("DateTimePicker").setMaxDate(e.date);
+    });
+  });
+</script>
+

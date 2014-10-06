@@ -83,17 +83,25 @@ module SchedulerHelper
 
   def getSlices
     broker_url = APP_CONFIG['broker_ip'] + ':' + APP_CONFIG['broker_port'].to_s
-    result = HTTParty.get(broker_url + "/resources/users?name=ardadouk", :verify => false)
-
-    temp = JSON.parse(result.body)
-
+    result = HTTParty.get(broker_url + "/resources/users?name="+current_user.name, :verify => false)
     user_slices = []
-    user_data =  temp["resource_response"]["resources"]
-    user_data.each do |element|
-      element["projects"].each do |slice|
-        user_slices << slice["account"]["name"]
+    if result.header.code == '200'
+      temp = JSON.parse(result.body)     
+      user_data =  temp["resource_response"]["resources"]
+      user_data.each do |element|
+        element["projects"].each do |slice|
+          user_slices << slice["account"]["name"]
+        end
+      end      
+    else
+      temp = JSON.parse(result.body)
+      if temp["exception"]["reason"] == "No resources matching the request."
+        flash[:danger] = "No resources matching the request. Please create a slice"
+      else
+        flash[:danger] = "Something went wrong !"
       end
     end
+
     return user_slices
   end
 

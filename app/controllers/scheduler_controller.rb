@@ -1,5 +1,5 @@
 class SchedulerController < ApplicationController
-
+  before_action :signed_in_user
   include SchedulerHelper
 
   def unbound_requests
@@ -86,9 +86,7 @@ class SchedulerController < ApplicationController
     @slices = getSlices
     puts @slices.inspect
     @my_reservations = Hash.new
-    if @slices.length == 0
-      flash[:success] = "You must create your own slice for these feature...Create a slice and try again"
-    else      
+    if @slices.length != 0    
       @slices.each do |slice|
         this_slice_leases = []
         this_slice_leases = getLeasesBySlice(slice)

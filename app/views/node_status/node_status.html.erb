@@ -6,31 +6,38 @@ require "httparty"
 require "json"
 
 %>
+<div class = "row">
+  <p>Current Slice : 
+    <%@user_slices.each do |slice|%>
+      <%=slice + ","%>
+    <%end%>
+  </p>
 
-<div class = "container">
-  <div class = "row">
+  <p>Choose one of your slices, in order to check the status of its reserved nodes:</p>
+
+  <%= select_tag(:user_slice, options_for_select(@user_slices)) %>
+</div>
 
 
-<div id = "node_status">
-<%
-@node_list.each do |element|%>
-  <div id = "node_<%=element%>" class = "nodes">
-  
-    <p><%=element%></p>
-    <p id = "node<%=element%>"></p>
-    
-    <%= button_to "OFF", {:action => "set_node_off", :controller => "node_status", :node_id => element} ,:id =>"off_"+element, :class => "btn btn-danger" , :remote => true, :disabled => false %>
-  
-    <%= button_to "ON", {:action => "set_node_on", :controller => "node_status", :node_id => element},:id =>"on_"+element, :class => "btn btn-primary", :remote => true, :disabled => true %>
-    <%= button_to "Reset", {:action => "reset_node", :controller => "node_status", :node_id => element},:id =>"reset"+element, :class => "btn", :remote => true, :disabled => true %>
+<div class = "row">
+
+  <div class = "col-lg-10">      
+        <% @node_list.each do |element|%>
+          <div id = "node_<%=element%>" class = "nodes">
+      
+            <p><%=element%></p>
+            <p id = "node<%=element%>"></p>
+        
+            <div class = "on-off-status">
+              <%= button_to "OFF", {:action => "set_node_off", :controller => "node_status", :node_id => element} ,:id =>"off_"+element, :class => "btn btn-danger btn-off" , :remote => true, :disabled => false %>
+        
+              <%= button_to "ON", {:action => "set_node_on", :controller => "node_status", :node_id => element},:id =>"on_"+element, :class => "btn btn-primary btn-on", :remote => true, :disabled => true %>
+            </div>
+
+            <div class = "reset-status">
+              <%= button_to "Reset", {:action => "reset_node", :controller => "node_status", :node_id => element},:id =>"reset"+element, :class => "btn btn-reset", :remote => true, :disabled => true %>
+            </div>
+          </div>
+        <%end%>
   </div>
-  <%
-end
-
-  %>
-    
-
-</div>
-
-</div>
 </div>
