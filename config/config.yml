@@ -5,6 +5,7 @@ defaults: &defaults
   cm_ip: http://83.212.32.165
   cm_port: 4567
   cm_sleep: 2.0
+  cert_path: "/home/zamihos/user_cert.pem"
 development:
   <<: *defaults
   

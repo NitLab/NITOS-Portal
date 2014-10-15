@@ -1,17 +1,51 @@
 <% provide(:title, 'Scheduler') %>
+
+<%
+require "momentjs-rails"
+
+%>
+
 <h1>Scheduler</h1>
 
-<div class = "container">
-  <div class = "row">
-  
-    <%=form_tag('/reservation', method: :get) do%>
-      
-      <%= select_date Date.today, prefix: :start_date %>
-      <%= submit_tag "Select Date" %>
+ 
+<div class="row">
+  <div class='col-sm-6'>
+    <%=form_tag('/scheduler', method: :get) do%>
+        <div class="form-group">
+          <div class='input-group date' id='datetimepicker1'>
+              <input type='text' class="form-control" name="start_date" data-date-format="YYYY-MM-DD HH:mm Z"/>
+              <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
+              </span>
+          </div>
+        </div>
+        <%= submit_tag "Select Date" %>
     <% end %>
-
   </div>
+
+  
+
+
+        <script type="text/javascript">        
+            $(function () {
+              var now = moment()
+              console.log(now);
+                var time = '2014-10-11'
+                $('#datetimepicker1').datetimepicker({
+                  minDate: now,   
+                  useSeconds: false,
+                  minuteStepping:30
+                  
+                });
+                
+            });
+        </script>
 </div>
+
+<%= select_tag(:user_slice, options_for_select(@slices),class:"check_selector")%>
+
+
+
+<h1><%=Time.zone.now%></h1>
 
 
 

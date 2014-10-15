@@ -1,21 +1,45 @@
 <% provide(:title, 'Reservetion') %>
 
+  <h1>Scheduler</h1>
+
+  <div class="row">
+    <div class='col-sm-6'>
+      <%=form_tag('/reservation', method: :get) do%>
+          <div class="form-group">
+            <div class='input-group date' id='datetimepicker1'>
+                <input type='text' class="form-control" name="start_date" data-date-format="YYYY-MM-DD"/>
+                <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
+                </span>
+            </div>
+            <%= submit_tag "Select Date" %>
+          </div>
+          
+      <% end %>
+    </div>
+  </div>
+  
+  <div class = "row">
+    <div class="col-sm-4">
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <span class="glyphicon glyphicon-lock"> : Reserved Timeslots</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class = "row">
     <div class = "col-lg-12">    
       <section class = "panel ">
-        <header class="panel-heading"> Make Reservations </header>
-
+        <%if @date == Date.today.to_s %>
+          <header class="panel-heading"> Reservation table for the next 24 hours</header>
+        <%else%>
+          <header class="panel-heading"> Reservation table for <%=@date%></header>
+        <%end%>
         <div class = "panel-body">
 
           <div class="table-responsive">
 
-            <%=form_tag('/reservation', method: :get) do%>        
-              <%= select_date Date.parse(@date), prefix: :start_date %>
-              <%= submit_tag "Select Date" %>
-            <% end %>
-
-        
-            <h3>Reservation table for <%=@date%></h3>
             <%=form_tag make_reservation_path do%>
               <%= select_tag(:user_slice, options_for_select(@user_slices)) %>
 
@@ -60,21 +84,12 @@
   </div>
 
 
-<!-- Apo dw kai katw einai gia to hmerologio -->
-
-  <div class="row">
-        <div class='col-sm-6'>
-            <div class="form-group">
-                <div class='input-group date' id='datetimepicker1'>
-                    <input type='text' class="form-control" />
-                    <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
-                    </span>
-                </div>
-            </div>
-        </div>
-        <script type="text/javascript">
-            $(function () {
-                $('#datetimepicker1').datetimepicker();
-            });
-        </script>
-    </div>
+<script type="text/javascript">
+              $(function () {
+                var today = moment();
+                  $('#datetimepicker1').datetimepicker({
+                    minDate: today,
+                    pickTime: false
+                  });
+              });
+          </script>

@@ -33,12 +33,12 @@ channel.bind(temp, function(temp) {
     $("#off_"+node).prop('disabled', false);
     $("#reset"+node).prop('disabled', false);
   }else if(temp["response"] == "off"){
-  	$("#node_"+node).css("background", "#bec3c7 ");
+  	$("#node_"+node).css("background", "black ");
     $("#on_"+node).prop('disabled', false);
     $("#off_"+node).prop('disabled', true);
     $("#reset"+node).prop('disabled', true);
   }else{
-  	$("#node_"+node).css("background", "white");
+  	$("#node_"+node).css("background", "#bec3c7");
   }
 })
 

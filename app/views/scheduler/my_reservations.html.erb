@@ -39,16 +39,40 @@
                       <tbody>
                         <%reservation_num = 1%>
                         <%value.each do |reservation|%>
-                          <tr>
+                          <%
+                          date_now = Time.now.to_s.split(" ")[0]
+                          time_now = Time.now.to_s.split(" ")[1][0...-3]
+                          time = date_now+"T"+time_now
+
+                          if reservation["valid_from"].to_s[0...-4]<= time && reservation["valid_until"].to_s[0...-4] > time%>
+                            <tr style = "background: #A4E8FF">
+                          <%else%>
+                            <tr>
+                          <%end%>
                             <td><%=reservation_num%></td>
                             <td> <%= reservation["valid_from"]%> </td>
                             <td> <%= reservation["valid_until"]%> </td>
                             <td> 
-                              <% reservation["components"].each do |element|%>
-                                <%=element["component"]["name"]%>
+                              <%
+                                resources_name_type = []
+                                reservation["components"].each do |element|
+                                  this_resource = []
+                                  this_resource << element["component"]["name"]
+                                  this_resource << element["component"]["type"]
+                                  resources_name_type << this_resource
+                                end
+                                resources_name_type = resources_name_type.uniq
+                                resources_name_type.each do |element|%>
+                                  <%=element[0] %>
+                                <%end
+                              %>
+                              
+                            </td>
+                            <td>
+                              <%resources_name_type.each do |element|%>
+                                  <%=element[1] %>
                               <%end%>
                             </td>
-                            <td> <%= reservation["components"][0]["component"]["type"]%> </td>
                             <td> <%= button_to "Cancel", {:action => "cancel_reservation", :controller => "scheduler", :lease_uuid => reservation["uuid"]},:id =>"cancel"+reservation["uuid"], :class => "btn btn-danger btn-cancel", :method => "delete"%> </td>
                           </tr>
                           <%reservation_num += 1%>
@@ -86,11 +110,26 @@
                             <td> <%= reservation["valid_from"]%> </td>
                             <td> <%= reservation["valid_until"]%> </td>
                             <td> 
-                              <% reservation["components"].each do |element|%>
-                                <%=element["component"]["name"]%>
+                              <%
+                                resources_name_type = []
+                                reservation["components"].each do |element|
+                                  this_resource = []
+                                  this_resource << element["component"]["name"]
+                                  this_resource << element["component"]["type"]
+                                  resources_name_type << this_resource
+                                end
+                                resources_name_type = resources_name_type.uniq
+                                resources_name_type.each do |element|%>
+                                  <%=element[0] %>
+                                <%end
+                              %>
+                              
+                            </td>
+                            <td>
+                              <%resources_name_type.each do |element|%>
+                                  <%=element[1] %>
                               <%end%>
                             </td>
-                            <td> <%= reservation["components"][0]["component"]["type"]%> </td>
                             <td> <%= button_to "Cancel", {:action => "cancel_reservation", :controller => "scheduler", :lease_uuid => reservation["uuid"]},:id =>"cancel"+reservation["uuid"], :class => "btn btn-danger btn-cancel", :method => "delete"%> </td>
                           </tr>
                           <%reservation_num += 1%>

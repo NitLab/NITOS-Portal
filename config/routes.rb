@@ -6,7 +6,7 @@ Rails.application.routes.draw do
   match '/signup',                to: 'users#new',                      via: 'get'
   match '/signin',                to: 'sessions#new',                   via: 'get'
   match '/signout',               to: 'sessions#destroy',               via: 'delete'
-  match '/your_ssh_keys',         to: 'static_pages#your_ssh_keys',     via: 'get'
+  match '/news',                  to: 'static_pages#news',              via: 'get'
   match '/about',                 to: 'static_pages#about',             via: 'get'
   match '/node_status',           to: 'node_status#node_status',        via: 'get'
   match '/scheduler',             to: 'scheduler#scheduler',            via: 'get'

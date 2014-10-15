@@ -1,45 +1,35 @@
 
   <div id = "sidebar" class = "nav-collapse" style = "overflow: hidden;">
     <div class="list-group panel">
+
       <a  href="/" class="list-group-item active">
         <i class = "glyphicon glyphicon-home" > </i>
-        <span>Dashboard</span>
+        <span>Home</span>
       </a>
-      <a href="#sub-scheduler" class="list-group-item" data-toggle="collapse" data-parent="#sidebar">
-        <i class = "glyphicon glyphicon-calendar" > </i>       
-        <span>Sceduler</span>
+
+      <a href="#sub-experimentation-tools" class="list-group-item" data-toggle="collapse" data-parent="#sidebar">
+        <i class = "glyphicon glyphicon-search" > </i>       
+        <span>Experimentation tools</span>
         <i class="caret"></i>
       </a>
 
-      <div class="collapse" id="sub-scheduler">
-        <a href="/scheduler" class="list-group-item">Make Reservations</a>
-        <a href="/unbound_requests" class="list-group-item">Unbound Requests</a>
+      <div class="collapse " id="sub-experimentation-tools">
+
+        <a href="#scheduler-sub-menu" class="list-group-item" data-toggle="collapse" data-parent="#sub-experimentation-tools">
+          <i class = "glyphicon glyphicon-calendar" > </i>
+          <span>Scheduler</span>
+          <i class="caret"></i>
+        </a>
+        <div class="collapse list-group-submenu" id="scheduler-sub-menu">
+          <a href="/reservation" class="list-group-item" data-parent="#scheduler-sub-menu">Reservation</a>
+          <a href="/unbound_requests" class="list-group-item" data-parent="#scheduler-sub-menu">Quick Reservation</a>
+        </div>
+        <a href="/node_status" class="list-group-item">Node Status</a>
         <a href="/my_reservations" class="list-group-item">My Reservations</a>
       </div>
-
-      <a href="#demo4" class="list-group-item list-group-item" data-toggle="collapse" data-parent="#sidebar">Static Pages</a>
-      <div class="collapse" id="demo4">
-        <a href="" class="list-group-item">Home</a>
-        <a href="" class="list-group-item">
-          <i class = "glyphicon glyphicon-envelope" > </i>
-          <span>Contact</span></a>
-        <a href="" class="list-group-item">
-          <i class = "glyphicon glyphicon-pencil" > </i>
-          <span>About</span>
-        </a>
-      </div>
-      <a href="/node_status" class="list-group-item">
-        <i class = "glyphicon glyphicon-inbox" > </i>
-        <span>Node Status</span>
-      </a>
-      <a href="" class="list-group-item">
-        <i class = "glyphicon glyphicon-envelope" > </i>
-        <span>Contact</span>
-      </a>
-      <a href="/about" class="list-group-item">
-        <i class = "glyphicon glyphicon-pencil" > </i>
-        <span>About</span>
-      </a>
+      
    </div> 
   </div>  
+
+
 

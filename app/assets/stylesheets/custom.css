@@ -63,6 +63,9 @@ p {
 }
 
 /* header */
+header{
+  background: #30508;
+}
 
 #logo {
   float: left;
@@ -184,11 +187,22 @@ a, a:hover, a:focus {
 .nodes{
   width: auto;
   padding: 10px;
-  float:right;
+  float:left;
   
   margin: 2px;
   text-align: center;
   color: #fff;
+}
+
+.disabled{
+  width: auto;
+  padding: 10px;
+  float:left;
+  
+  margin: 2px;
+  text-align: center;
+  color: #fff;
+  background: #bec3c7;
 }
 
 .on-off-status{
@@ -224,6 +238,10 @@ a, a:hover, a:focus {
 
 }
 
+.list-group-submenu {
+  margin-left:10px;
+}
+
 /*Unboun Requests*/
 
 .panel-heading {
@@ -242,6 +260,7 @@ a, a:hover, a:focus {
 
 .stepy-tab ul li {
     float: left;
+    list-style: none outside none;
 }
 
 .stepy-titles li {
@@ -249,10 +268,6 @@ a, a:hover, a:focus {
     cursor: pointer;
     float: left;
     margin: 10px 15px;
-}
-
-ul li {
-    list-style: none outside none;
 }
 
 .stepy-titles li.current-step div {
@@ -422,4 +437,32 @@ label {
 span.glyphicon-lock {
     font-size: 1.4em;
     cursor: not-allowed;
+}
+
+/*News*/
+
+.about-list ul li{
+  margin: 5px;
+
+}
+
+/*Home*/
+
+.tiles{
+  width: 250px;
+  height: 250px;
+  background: #fff;
+}
+
+#registration{
+  background: none repeat scroll 0 0 #6ccac9;
+}
+#login{
+  background: none repeat scroll 0 0 #ff6c60;
+}
+#tutorial{
+  background: none repeat scroll 0 0 #57c8f2;
+}
+#contact{
+  background: none repeat scroll 0 0 #8075c4;
 }

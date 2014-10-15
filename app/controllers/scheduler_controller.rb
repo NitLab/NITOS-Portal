@@ -1,12 +1,12 @@
 class SchedulerController < ApplicationController
   before_action :signed_in_user
   include SchedulerHelper
+  require "momentjs-rails"
 
   def unbound_requests
     
     node_obj = Nodes.new
     @node_list = node_obj.get_node_list
-    #@node_list_names = node_obj.get_node_list_names
     @user_slices = getSlices()
 
     @mapping_result = []
@@ -14,22 +14,25 @@ class SchedulerController < ApplicationController
       @mapping_result = params["resource_response"]["resources"]
     end
     puts @mapping_result
-    #@req = unboundRequest()
-    #puts @req
+    
   end
 
   def make_unbound_requests
     puts params
-    #puts params[:user_slice]
-    puts params[:type1]
-    puts params[:number_t1]
-    puts params[:type2]
-    puts params[:number_t2]
+    
+    puts params[:number_of_nodes]
+    puts params[:number_of_channels]
     puts params[:duration_t1]
-    puts params[:valid_from]
+    puts params[:duration_t2]
+    puts params[:start_date]
+    puts params[:start_date_2]
+    puts params[:domain1]
+    puts params[:domain2]
 
-    if params[:type1] == "" || params[:number_t1] == ""
-      flash[:danger] = "Slice , type and number fields must not be blank"
+    mapping_result = []
+
+    if params[:number_of_nodes] == "" && params[:number_of_channels] == ""
+      flash[:danger] = "You must set number of nodes or channels tou make an unbound request!"
     else
       mapping_result = unboundRequest(params)
       puts "H sunarthsh mou epestrepse "
@@ -89,12 +92,12 @@ class SchedulerController < ApplicationController
     if @slices.length != 0    
       @slices.each do |slice|
         this_slice_leases = []
-        this_slice_leases = getLeasesBySlice(slice)
-        
-        @my_reservations[slice] = this_slice_leases
-        
-        puts "my reservations "
-        puts @my_reservations.inspect
+        this_slice_leases = getLeasesBySlice(slice)        
+        #Sort my slices by valid_from
+        this_slice_leases = this_slice_leases.sort_by{|hsh| hsh["valid_from"]}
+        @my_reservations[slice] = this_slice_leases       
+        # puts "my reservations "
+        # puts @my_reservations.inspect
       end
     end
   end
@@ -108,15 +111,57 @@ class SchedulerController < ApplicationController
 
   def scheduler 
     puts "Sxetika me tis wres"
+    puts "Time.zone.now"
     puts Time.zone.now
-    #puts Date.today.to_time_in_current_zone
+    puts "Time.now"
+    puts Time.now
+    puts "2.hours.ago"
+    puts 2.hours.ago
+    puts "1.day.from_now"
     puts 1.day.from_now
+    puts "Date.today"
+    puts Date.today
+    puts "Time.zone.today"
+    puts Time.zone.today
+    puts "Time.zone.today - 1.day"
+    puts Time.zone.today - 1.day
+    # puts "Date.today.to_time_in_current_zone"
+    # puts Date.today.to_time_in_current_zone
+    puts "Date.current"
+    puts Date.current
+    puts "Time.zone.today"
+    puts Time.zone.today
+    
+
+    if params[:start_date] != nil
+      puts params[:start_date]
+    end
+
+    example = []
+    example = getLeasesByAccount
+
+    @slices = []
+    @slices = getSlices
+
     # reserveNode(["77879ad1-b6ee-419c-ae70-05c19f4ea745"],"ardadouk","2014-09-30 15:15:00 +0000","2014-09-30 19:15:00 +0000")
     # reserveNode(["77879ad1-b6ee-419c-ae70-05c19f4ea745"],"ardadouk","2014-09-30 20:00:00 +0000","2014-09-30 22:30:00 +0000")
     # reserveNode(["a1d43ca1-8798-4564-8a63-37dd95a15ded"],"ardadouk","2014-09-30 20:45:00 +0000","2014-09-30 22:45:00 +0000")
   end
 
   def reservation 
+
+    puts "Testing times"
+
+    if params[:start_date] == "" || params[:start_date] == nil
+      @date = Date.today.to_s
+    else
+      @date = params[:start_date]
+    end
+    puts @date
+    puts params[:start_date]
+    puts "h shmerinh hmeromhnia"
+    puts Time.zone.today.to_s
+
     node_obj = Nodes.new
     @node_list = node_obj.get_node_list
     @node_list_names = node_obj.get_node_list_names
@@ -142,13 +187,17 @@ class SchedulerController < ApplicationController
       $i +=1
     end
 
-    @date = (Date.civil(params[:start_date][:year].to_i,params[:start_date][:month].to_i,
-     params[:start_date][:day].to_i)).to_s
+    # @date = (Date.civil(params[:start_date][:year].to_i,params[:start_date][:month].to_i,
+    #  params[:start_date][:day].to_i)).to_s
+
+    
     if @date == Date.today.to_s
       #Emfanise pinaka gia tis epomenes 24 wres
       time_now =  Time.now.to_s.split(" ")[1][0...-3]
-      @tomorrow = ((Date.civil(params[:start_date][:year].to_i,params[:start_date][:month].to_i,
-           params[:start_date][:day].to_i)) + 1).to_s
+      # @tomorrow = ((Date.civil(params[:start_date][:year].to_i,params[:start_date][:month].to_i,
+      #      params[:start_date][:day].to_i)) + 1).to_s
+      @tomorrow = (Date.today + 1.day).to_s
+
       puts time_now
       puts @tomorrow
 
@@ -562,10 +611,12 @@ class SchedulerController < ApplicationController
     node_list_uuids = node_obj.get_node_list_uuids
     # Vriskw poioi komvoi einai pros krathsh 
     ids = []
+    reservations = []
     reservations = params[:reservations]
     reservation_table = []
-    if reservations.length == 0 
-      #Emfanise sxetiko mnm sto xrhsth 
+    if reservations == nil 
+      redirect_to :back
+      flash[:danger] = "You must select a timeslot to make a reservation. Please try again" 
     else
       puts "Autes einai oi krathseis pou thelw na kanw "
       puts reservations

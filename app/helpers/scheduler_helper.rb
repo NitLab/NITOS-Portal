@@ -6,9 +6,9 @@ module SchedulerHelper
   require "uri"
 
   def httpGETRequest(http)
-
+    cert_path = APP_CONFIG['cert_path']
     uri = URI.parse(http)
-    pem = File.read("/home/zamihos/user_cert.pem")
+    pem = File.read(cert_path)
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
     http.cert = OpenSSL::X509::Certificate.new(pem)
@@ -33,8 +33,8 @@ module SchedulerHelper
     result = HTTParty.get(broker_url + "/resources/leases", :verify => false)
     temp = JSON.parse(result.body)
     leases = []
-    puts "Test"
-    puts temp
+    # puts "Test"
+    # puts temp
     if ! temp.has_key?("exception")
       leases =  temp["resource_response"]["resources"]
     end
@@ -81,6 +81,29 @@ module SchedulerHelper
     return this_slice_leases
   end
 
+  def getLeasesByAccount
+    #puts "Eimai mesa sthn getLeasesByAccount"
+    this_account_slices = []
+    this_account_slices = getSlices
+    #puts this_account_slices.inspect
+    this_account_reservations = Hash.new
+    if this_account_slices.length != 0    
+      this_account_slices.each do |slice|
+        this_slice_leases = []
+        this_slice_leases = getLeasesBySlice(slice)        
+
+        #Sort my slices by valid_from
+        this_slice_leases = this_slice_leases.sort_by{|hsh| hsh["valid_from"]}
+        this_account_reservations[slice] = this_slice_leases       
+        #puts "this_account_reservations "
+        #puts this_account_reservations.inspect
+      end
+    end
+    #puts "Edw teleiwnei h getLeasesByAccount"
+    #puts this_account_reservations.inspect
+    return this_account_reservations
+  end
+
   def getSlices
     broker_url = APP_CONFIG['broker_ip'] + ':' + APP_CONFIG['broker_port'].to_s
     result = HTTParty.get(broker_url + "/resources/users?name="+current_user.name, :verify => false)
@@ -106,8 +129,9 @@ module SchedulerHelper
   end
 
   def reserveNode(node_ids,account_name,valid_from,valid_until)
+    cert_path = APP_CONFIG['cert_path']
     resernation_name =account_name+ "/" + (1000 + Random.rand(10000000)).to_s
-    puts "namaasdfasd fasdfasdfaskjhdfkjasdhf asdfjh"
+    #puts "namaasdfasd fasdfasdfaskjhdfkjasdhf asdfjh"
     puts resernation_name
     
     broker_url = APP_CONFIG['broker_ip'] + ':' + APP_CONFIG['broker_port'].to_s
@@ -128,7 +152,7 @@ module SchedulerHelper
 
     #puts options.to_json            
     uri = URI.parse(broker_url+"/resources/leases")
-    pem = File.read("/home/zamihos/user_cert.pem")
+    pem = File.read(cert_path)
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
     http.cert = OpenSSL::X509::Certificate.new(pem)
@@ -156,34 +180,71 @@ module SchedulerHelper
     h1 = Hash.new
     h2 = Hash.new
 
-    time_now =  Time.now.to_s.split(" ")[1][0...-3]
-    time_from = roundTimeUp(time_now)
-    valid_from = Time.now.to_s.split(" ")[0] + " " +time_from+ ":00 +0000"
+    
 
     puts "Gia na doume tous xronous"
     puts Time.now
-    puts valid_from
 
-    if params[:duration_t1] != ""
-      h1 = { type: params[:type1], exclusive: true, duration: params[:duration_t1].to_i, valid_from: valid_from}
-    else
-      h1 = { type: params[:type1], exclusive: true, valid_from: valid_from}
-    end
-
-    params[:number_t1].to_i.times {resources << h1}
-
-    if params[:type2] != "" && params[:number_t2] != ""
-      if params[:duration_t2] != ""
-        h2 = { type: params[:type2], exclusive: true, duration: params[:duration_t2].to_i, valid_from: valid_from }
+    #Gia nodes
+    if params[:number_of_nodes] != ""
+      if params[:start_date] != ""
+        valid_from_1 = params[:start_date] + ":00 +0000"
       else
-        h2 = { type: params[:type2], exclusive: true, valid_from: valid_from }
-      end
-      params[:number_t2].to_i.times {resources << h2}
+        time_now =  Time.now.to_s.split(" ")[1][0...-3]
+        time_from = roundTimeUp(time_now)
+        valid_from_1 = Time.now.to_s.split(" ")[0] + " " +time_from+ ":00 +0000"
+      end        
+
+      if params[:duration_t1] != ""
+        if params[:domain1] != ""
+          h1 = { type: "Node", exclusive: true, duration: params[:duration_t1].to_i, valid_from: valid_from_1, domain: params[:domain1]}
+        else
+          h1 = { type: "Node", exclusive: true, duration: params[:duration_t1].to_i, valid_from: valid_from_1}
+        end
+      else
+        if params[:domain1] != ""
+          h1 = { type: "Node", exclusive: true, valid_from: valid_from_1, domain: params[:domain1]}
+        else
+          h1 = { type: "Node", exclusive: true, valid_from: valid_from_1}
+        end
+      end      
+
+      params[:number_of_nodes].to_i.times {resources << h1}
+
+      puts "Tsekarisma "
+      puts params[:number_of_nodes]
+      puts h1
+      puts resources
     end
 
-    # Harcoded request
-    # t1 = Time.now + 21600
-    # puts t1
+    #Gia channels
+    if params[:number_of_channels] != ""
+      if params[:start_date_2] != ""
+        valid_from_2 = params[:start_date_2] + ":00 +0000"
+      else
+        time_now =  Time.now.to_s.split(" ")[1][0...-3]
+        time_from = roundTimeUp(time_now)
+        valid_from_2 = Time.now.to_s.split(" ")[0] + " " +time_from+ ":00 +0000"
+      end
+
+      if params[:duration_t2] != ""
+        if params[:domain2] != ""
+          h1 = { type: "Channel", exclusive: true, duration: params[:duration_t2].to_i, valid_from: valid_from_2, domain: params[:domain2]}
+        else
+          h1 = { type: "Channel", exclusive: true, duration: params[:duration_t2].to_i, valid_from: valid_from_2}
+        end
+      else
+        if params[:domain2] != ""
+          h1 = { type: "Channel", exclusive: true, valid_from: valid_from_2, domain: params[:domain2]}
+        else
+          h1 = { type: "Channel", exclusive: true, valid_from: valid_from_2}
+        end
+      end      
+
+      params[:number_of_channels].to_i.times {resources << h1}
+
+    end
+
     options = {body: {
       resources: resources
     }.to_json, :headers => { 'Content-Type' => 'application/json' } , :verify => false}
@@ -239,14 +300,15 @@ module SchedulerHelper
   end
 
   def cancelReservation(lease_uuid)
-    broker_url = APP_CONFIG['broker_ip'] + ':' + APP_CONFIG['broker_port'].to_s
-
+    broker_url = APP_CONFIG['broker_ip'] + ':' + APP_CONFIG['broker_port'].to_s    
+    cert_path = APP_CONFIG['cert_path']
+    
     header = {"Content-Type" => "application/json"}
     options = {uuid: lease_uuid}
 
     #puts options.to_json            
     uri = URI.parse(broker_url+"/resources/leases")
-    pem = File.read("/home/zamihos/user_cert.pem")
+    pem = File.read(cert_path)
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
     http.cert = OpenSSL::X509::Certificate.new(pem)
