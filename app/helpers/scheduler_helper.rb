@@ -185,16 +185,16 @@ module SchedulerHelper
     puts "Gia na doume tous xronous"
     puts Time.now
 
+    if params[:start_date] != ""
+      valid_from = params[:start_date] + ":00 +0000"
+    else
+      time_now =  Time.now.to_s.split(" ")[1][0...-3]
+      time_from = roundTimeUp(time_now)
+      valid_from_1 = Time.now.to_s.split(" ")[0] + " " +time_from+ ":00 +0000"
+    end
+
     #Gia nodes
     if params[:number_of_nodes] != ""
-      if params[:start_date] != ""
-        valid_from_1 = params[:start_date] + ":00 +0000"
-      else
-        time_now =  Time.now.to_s.split(" ")[1][0...-3]
-        time_from = roundTimeUp(time_now)
-        valid_from_1 = Time.now.to_s.split(" ")[0] + " " +time_from+ ":00 +0000"
-      end        
-
       if params[:duration_t1] != ""
         if params[:domain1] != ""
           h1 = { type: "Node", exclusive: true, duration: params[:duration_t1].to_i, valid_from: valid_from_1, domain: params[:domain1]}
@@ -219,25 +219,17 @@ module SchedulerHelper
 
     #Gia channels
     if params[:number_of_channels] != ""
-      if params[:start_date_2] != ""
-        valid_from_2 = params[:start_date_2] + ":00 +0000"
-      else
-        time_now =  Time.now.to_s.split(" ")[1][0...-3]
-        time_from = roundTimeUp(time_now)
-        valid_from_2 = Time.now.to_s.split(" ")[0] + " " +time_from+ ":00 +0000"
-      end
-
-      if params[:duration_t2] != ""
+      if params[:duration_t1] != ""
         if params[:domain2] != ""
-          h1 = { type: "Channel", exclusive: true, duration: params[:duration_t2].to_i, valid_from: valid_from_2, domain: params[:domain2]}
+          h1 = { type: "Channel", exclusive: true, duration: params[:duration_t1].to_i, valid_from: valid_from, domain: params[:domain2]}
         else
-          h1 = { type: "Channel", exclusive: true, duration: params[:duration_t2].to_i, valid_from: valid_from_2}
+          h1 = { type: "Channel", exclusive: true, duration: params[:duration_t1].to_i, valid_from: valid_from}
         end
       else
         if params[:domain2] != ""
-          h1 = { type: "Channel", exclusive: true, valid_from: valid_from_2, domain: params[:domain2]}
+          h1 = { type: "Channel", exclusive: true, valid_from: valid_from, domain: params[:domain2]}
         else
-          h1 = { type: "Channel", exclusive: true, valid_from: valid_from_2}
+          h1 = { type: "Channel", exclusive: true, valid_from: valid_from}
         end
       end      
 
@@ -255,6 +247,7 @@ module SchedulerHelper
     if response.header.code != '200'
       puts "Something went wrong"
       puts response
+      flash[:danger] = response
     else    
       puts response
       return response

@@ -30,9 +30,9 @@ require "json"
                 <p id = "node<%=element%>"></p>
             
                 <div class = "on-off-status">
-                  <%= button_to "OFF", {:action => "set_node_off", :controller => "node_status", :node_id => element} ,:id =>"off_"+element, :class => "btn btn-danger btn-off" , :remote => true, :disabled => false %>
+                  <%= button_to "OFF", {:action => "set_node_off", :controller => "node_status", :node_id => element} ,:id =>"off_"+element , :remote => true, :disabled => false , :class => "btn btn-danger node-off"%>
             
-                  <%= button_to "ON", {:action => "set_node_on", :controller => "node_status", :node_id => element},:id =>"on_"+element, :class => "btn btn-primary btn-on", :remote => true, :disabled => true %>
+                  <%= button_to "ON", {:action => "set_node_on", :controller => "node_status", :node_id => element},:id =>"on_"+element, :remote => true, :disabled => true, :class => "btn btn-primary node-on" %>
                 </div>
 
                 <div class = "reset-status">
@@ -40,15 +40,15 @@ require "json"
                 </div>
               </div>
             <%else%>
-              <div class = "disabled">
+              <div class = "disabled_nodes">
 
                 <p><%=element%></p>
                 <p id = "node<%=element%>"></p>
             
                 <div class = "on-off-status">
-                  <%= button_to "OFF", {:action => "set_node_off", :controller => "node_status", :node_id => element} , :class => "btn btn-danger btn-off" , :remote => true, :disabled => true %>
+                  <%= button_to "OFF", {:action => "set_node_off", :controller => "node_status", :node_id => element} , :class => "btn btn-danger node-off" , :remote => true, :disabled => true %>
             
-                  <%= button_to "ON", {:action => "set_node_on", :controller => "node_status", :node_id => element}, :class => "btn btn-primary btn-on", :remote => true, :disabled => true %>
+                  <%= button_to "ON", {:action => "set_node_on", :controller => "node_status", :node_id => element}, :class => "btn btn-primary node-on", :remote => true, :disabled => true %>
                 </div>
 
                 <div class = "reset-status">
@@ -62,12 +62,14 @@ require "json"
 </div>
 
 <script>
-  $('.btn-on').click(function(){
+  
+  $('.node-on').click(function(){
     var id = this.id;
-    $("#"+id).attr("disabled", true); 
+    $("#"+id).prop('disabled', true)
+    
   });
-  $('.btn-off').click(function(){
+  $('.node-off').click(function(){
     var id = this.id;
-    $("#"+id).attr("disabled", true); 
+    $("#"+id).prop('disabled', true); 
   });
 </script>

@@ -46,5 +46,11 @@
 		<%= render 'layouts/footer' %>
 
 	</body>
+<script>
+	jQuery(function() {
+  	var tz = moment();
+  	$.cookie('timezone', tz, { path: '/' });
+	});
+</script>
 
 </html>

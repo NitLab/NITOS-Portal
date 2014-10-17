@@ -1,5 +1,6 @@
 class SchedulerController < ApplicationController
   before_action :signed_in_user
+  around_filter :set_timezone
   include SchedulerHelper
   require "momentjs-rails"
 
@@ -779,6 +780,19 @@ class SchedulerController < ApplicationController
         end
       redirect_to :back 
     end 
+  end
+
+  private
+
+  def set_timezone
+    default_timezone = Time.zone
+    client_timezone  = request.cookies[:timezone]
+    puts "Na to to coooookie"
+    puts client_timezone
+    Time.zone = client_timezone if client_timezone.present?
+    yield
+  ensure
+    Time.zone = default_timezone
   end
 
 end

@@ -97,25 +97,7 @@
               </div>
 
               <div class = "form-group">
-                <label class="col-lg-2 control-label">Choose duration</label>
-                <div class = "col-md-4 col-lg-4">
-                  <%= select_tag(:duration_t2, options_for_select(duration_values), class:"form-control", include_blank: true) %>
-                </div>  
-              </div>
-
-              <div class = "form-group">
-                <label class="col-lg-2 control-label">Choose time from</label>
-                <div class = "col-md-4 col-lg-4">
-                  <div class='input-group date' id='datetimepicker3'>
-                    <input type='text' class="form-control" name="start_date_2" data-date-format="YYYY-MM-DD HH:mm"/>
-                    <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
-                    </span>
-                  </div>
-                </div>  
-              </div>
-
-              <div class = "form-group">
-                <label class="col-lg-2 control-label">Select domain of nodes</label>
+                <label class="col-lg-2 control-label">Select domain of channels</label>
                 <div class = "col-md-4 col-lg-4">
                 <%= select_tag(:domain2, options_for_select([['omf:testserver', "omf:testserver"]]), class:"form-control",include_blank: true) %>
                 </div>
@@ -221,11 +203,6 @@
   $(function () {
     var now = moment();
     $('#datetimepicker2').datetimepicker({
-      minDate: now,
-      useSeconds: false,
-      minuteStepping:30
-    });
-    $('#datetimepicker3').datetimepicker({
       minDate: now,
       useSeconds: false,
       minuteStepping:30

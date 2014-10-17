@@ -43,16 +43,23 @@
             <%=form_tag make_reservation_path do%>
               <%= select_tag(:user_slice, options_for_select(@user_slices)) %>
 
-              <table class="table table-hover table-bordered">
+              <table class="table table-bordered table-striped">
 
                 <tr>
+                  <td></td>
                   <%@reservation_table[0].each_key do |key|%>
-                    <td><%=key%></td>
+                    <td><%=key.split(" ")[1]%></td>
                   <%end%>
                 </tr>
 
                 <%@reservation_table.each do |iterate|%>
                   <tr title = "<%=iterate.values[0]%>">
+
+                    <td  >
+                      <img src="images/details_open.png" data-toggle="collapse" data-target="#details_for_<%=iterate.values[0]%>" id = "img_details_for_<%=iterate.values[0]%>" class ="button-node-details">
+                      
+                    </td>
+
                     <%iterate.each do |key, value|%>  
                       <%if key == "Name"%>
                         <td>
@@ -64,7 +71,7 @@
                             <span class = "glyphicon glyphicon-lock"></span>                             
                           </td>
                         <%else%>
-                          <td>
+                          <td class = "td-checkbox">
                             <%timh = iterate.values[0]+"/"+key %>
                             <%=check_box_tag "reservations[]",iterate.values[0]+"/"+key,false, :class => "regular-checkbox big-checkbox",:id => timh%>
                             <label for="<%=timh%>"></label>                      
@@ -73,6 +80,14 @@
                       <%end%>
                     <%end%>
                   </tr>
+
+                  <tr class = "collapse" id = "details_for_<%=iterate.values[0]%>">
+                    <td colspan="50">Deatails for node #0
+                      <p>asdfasasdfasfd</p>
+                      <p>asdfasdfasfdasfd</p>
+                    </td>
+                  </tr>
+
                 <%end%>
               </table>
               <%= submit_tag "Make reservations" %>
@@ -85,11 +100,23 @@
 
 
 <script type="text/javascript">
-              $(function () {
-                var today = moment();
-                  $('#datetimepicker1').datetimepicker({
-                    minDate: today,
-                    pickTime: false
-                  });
-              });
-          </script>
+  $(function () {
+    var today = moment();
+    $('#datetimepicker1').datetimepicker({
+      minDate: today,
+      pickTime: false
+    });
+  });
+</script>
+
+<script>
+  $('.button-node-details').click(function(){
+    var id = this.id;
+    if($("#"+id).attr("src") == "images/details_open.png"){
+      $("#"+id).attr("src", "images/details_close.png");
+    }else{
+      $("#"+id).attr("src", "images/details_open.png");
+    }
+  });
+  
+</script>

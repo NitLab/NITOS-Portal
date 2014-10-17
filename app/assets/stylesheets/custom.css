@@ -194,7 +194,7 @@ a, a:hover, a:focus {
   color: #fff;
 }
 
-.disabled{
+.disabled_nodes{
   width: auto;
   padding: 10px;
   float:left;
@@ -213,12 +213,12 @@ a, a:hover, a:focus {
   margin-top: 2px;   
 }
 
-.btn-off{
+.node-off{
   width: 50px;  
   float: right;  
 }
 
-.btn .btn-danger .btn-on{
+.btn .btn-primary .node-on{
   width: 50px;  
   float: right;  
 }
@@ -363,6 +363,91 @@ a, a:hover, a:focus {
 
 /*Scheduler*/
 
+td.td-checkbox{
+  padding: 0px!important;
+  line-height: 0.7!important;
+}
+
+td.td-checkbox:hover, td.td-checkbox:active{
+  background-color: #428bca;
+  
+}
+.regular-checkbox + label:hover { 
+  background-color: #428bca;
+}
+
+.regular-checkbox:checked + label:hover { 
+  background-color: #428bca;
+}
+
+label {
+  display: inline;
+}
+
+.regular-checkbox {
+  display: none;
+}
+
+.regular-checkbox + label {
+  background-color: inherit;
+  /*border: 1px solid #cacece;*/
+  
+  padding: 9px;
+  padding-bottom: 34px;
+  border-radius: 0px;
+  display: inline-block;
+  position: relative;
+  width: 100%;
+  margin: 0px;
+}
+
+.regular-checkbox + label:active, .regular-checkbox:checked + label:active {
+  
+}
+
+.regular-checkbox:checked + label {
+  background-color: inherit;
+  /*border: 1px solid #adb8c0;*/
+  
+  color: #99a1a7;
+}
+
+.regular-checkbox:checked + label:after {
+  content: '\2714';
+  font-size: 14px;
+  position: absolute;
+  top: 7px;
+  left: 3px;
+  color: #99a1a7;
+}
+
+
+.big-checkbox + label {
+  padding: 18px;
+}
+
+.big-checkbox:checked + label:after {
+  font-size: 28px;
+  left: 14px;
+}
+
+.tag {
+  font-family: Arial, sans-serif;
+  width: 200px;
+  position: relative;
+  top: 5px;
+  font-weight: bold;
+  text-transform: uppercase;
+  display: block;
+  float: left;
+}
+
+
+
+.button-holder {
+  float: left;
+}
+
 /*
 .regular-checkbox + label { }
 
@@ -435,8 +520,10 @@ label {
 
 */
 span.glyphicon-lock {
-    font-size: 1.4em;
+    font-size: 1.2em;
     cursor: not-allowed;
+    left: 11px;
+    top: 4px;
 }
 
 /*News*/
