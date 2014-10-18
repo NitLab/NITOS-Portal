@@ -9,6 +9,7 @@ class Nodes
   Nodes.class_variable_set(:@@node_list_names, y)
 
   @@node_list_uuids = Hash.new
+  @@hash_details_of_nodes = Hash.new
 
   def refresh_node_list
     x= []
@@ -22,6 +23,7 @@ class Nodes
         @@node_list << element["name"].scan( /\d+$/ ).first
         @@node_list_names << element["name"]
         @@node_list_uuids[element["name"]] = element["uuid"]
+        @@hash_details_of_nodes[element["name"]] = element
       end
     end
   end
@@ -36,6 +38,10 @@ class Nodes
 
   def get_node_list
     return @@node_list 
+  end
+
+  def get_details_of_nodes
+    return @@hash_details_of_nodes
   end
 
 end

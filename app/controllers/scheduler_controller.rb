@@ -167,6 +167,7 @@ class SchedulerController < ApplicationController
     @node_list = node_obj.get_node_list
     @node_list_names = node_obj.get_node_list_names
     @user_slices = getSlices()
+    @details_of_nodes = node_obj.get_details_of_nodes
 
     columns = Array.new(48)
     columns[0]= "Name"
@@ -786,7 +787,7 @@ class SchedulerController < ApplicationController
 
   def set_timezone
     default_timezone = Time.zone
-    client_timezone  = request.cookies[:timezone]
+    client_timezone  = cookies[:timezone]
     puts "Na to to coooookie"
     puts client_timezone
     Time.zone = client_timezone if client_timezone.present?

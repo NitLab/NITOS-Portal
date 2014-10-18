@@ -11,6 +11,8 @@
 // about supported directives.
 //
 //= require jquery
+//= require jquery.cookie
+//= require jstz-1.0.4.min
 //= require jquery_ujs
 //= require bootstrap.min
 //= require moment

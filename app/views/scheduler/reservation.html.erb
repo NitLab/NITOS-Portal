@@ -82,9 +82,22 @@
                   </tr>
 
                   <tr class = "collapse" id = "details_for_<%=iterate.values[0]%>">
-                    <td colspan="50">Deatails for node #0
-                      <p>asdfasasdfasfd</p>
-                      <p>asdfasdfasfdasfd</p>
+                    <td colspan="50">
+                      <p>Deatails for node <%=iterate.values[0]%></p>
+                      <ul>
+                        <li>hardware_type:  <%=@details_of_nodes[iterate.values[0]]["hardware_type"]%></li>
+                        <li>domain:         <%=@details_of_nodes[iterate.values[0]]["domain"]%></li>
+                        <li>cpu_type:       <%=@details_of_nodes[iterate.values[0]]["cpu"]["cpu_type"]%></li>
+                        <li>ram:            <%=@details_of_nodes[iterate.values[0]]["ram"]%></li>
+                        <li>hd_capacity     <%=@details_of_nodes[iterate.values[0]]["hd_capacity"]%></li>
+                        <li>
+                          interfaces:     <ul><%@details_of_nodes[iterate.values[0]]["interfaces"].each do |interface| %>
+                                                <li><%=interface["name"]%></li>
+                                              <%end%>
+                                          </ul>
+                        </li>
+                      </ul>
+                      
                     </td>
                   </tr>
 

@@ -48,8 +48,9 @@
 	</body>
 <script>
 	jQuery(function() {
-  	var tz = moment();
-  	$.cookie('timezone', tz, { path: '/' });
+  	
+  	var tz = jstz.determine();
+  	$.cookie('timezone', tz.name(), { path: '/' });
 	});
 </script>
 

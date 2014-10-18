@@ -12,6 +12,7 @@ gem 'thin'
 gem 'websocket-rails'
 gem 'momentjs-rails', '>= 2.8.1'
 gem 'bootstrap3-datetimepicker-rails', '~> 3.1.3'
+gem 'jquery-cookie-rails'
 #gem "font-awesome-rails"
 #gem 'bootstrap-sass'
 # Use mysql as the database for Active Record
