@@ -40,11 +40,13 @@
                         <%reservation_num = 1%>
                         <%value.each do |reservation|%>
                           <%
-                          date_now = Time.now.to_s.split(" ")[0]
-                          time_now = Time.now.to_s.split(" ")[1][0...-3]
-                          time = date_now+"T"+time_now
+                          # date_now = Time.zone.now.to_s.split(" ")[0]
+                          # time_now = Time.zone.now.to_s.split(" ")[1][0...-3]
+                          # time = date_now+"T"+time_now
+                          time = Time.zone.now.to_s
 
-                          if reservation["valid_from"].to_s[0...-4]<= time && reservation["valid_until"].to_s[0...-4] > time%>
+                          # if reservation["valid_from"].to_s[0...-4]<= time && reservation["valid_until"].to_s[0...-4] > time
+                          if reservation["valid_from"].to_s<= time && reservation["valid_until"].to_s[0...-4] > time%>
                             <tr style = "background: #A4E8FF">
                           <%else%>
                             <tr>

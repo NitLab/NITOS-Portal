@@ -1,7 +1,9 @@
 class NodeStatusController < ApplicationController
-  before_action :signed_in_user
   include NodeStatusHelper
   include SchedulerHelper
+  before_action :signed_in_user
+  around_filter :set_timezone
+  
 
   def node_status
     node_obj = Nodes.new
@@ -25,9 +27,7 @@ class NodeStatusController < ApplicationController
       end
     end
 
-    date_now = Time.now.to_s.split(" ")[0]
-    time_now = Time.now.to_s.split(" ")[1][0...-3]
-    time = date_now+"T"+time_now
+    time = Time.zone.now.to_s
     
 
     @reserved_nodes = []
@@ -35,7 +35,7 @@ class NodeStatusController < ApplicationController
       this_account_reservations.each_value do |value|
         value.each do |reservation|
             reservation["components"].each do |element|
-              if element["component"]["name"].to_s[-3,3] == node && reservation["valid_from"].to_s[0...-4]<= time && reservation["valid_until"].to_s[0...-4] > time
+              if element["component"]["name"].to_s[-3,3] == node && reservation["valid_from"].to_s<= time && reservation["valid_until"].to_s > time
                 @reserved_nodes << node
                 break
               end

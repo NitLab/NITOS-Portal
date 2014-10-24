@@ -1,8 +1,8 @@
 class SchedulerController < ApplicationController
-  before_action :signed_in_user
-  around_filter :set_timezone
   include SchedulerHelper
-  require "momentjs-rails"
+  before_action :signed_in_user
+  around_filter :set_timezone 
+  #require "momentjs-rails"
 
   def unbound_requests
     
@@ -154,14 +154,17 @@ class SchedulerController < ApplicationController
     puts "Testing times"
 
     if params[:start_date] == "" || params[:start_date] == nil
-      @date = Date.today.to_s
+      @date = Time.zone.today.to_s
     else
-      @date = params[:start_date]
+      @date = params[:start_date].split(" ")[0]
+      puts "date_to_utc"
+      date_to_utc = Time.zone.parse(params[:start_date]).utc.to_s.split(' ')[0]
+      puts date_to_utc 
     end
+    puts "@date"
     puts @date
+    puts "params[:start_date]"
     puts params[:start_date]
-    puts "h shmerinh hmeromhnia"
-    puts Time.zone.today.to_s
 
     node_obj = Nodes.new
     @node_list = node_obj.get_node_list
@@ -188,20 +191,21 @@ class SchedulerController < ApplicationController
       rows[$i][0] = @node_list_names[$i]
       $i +=1
     end
-
-    # @date = (Date.civil(params[:start_date][:year].to_i,params[:start_date][:month].to_i,
-    #  params[:start_date][:day].to_i)).to_s
-
     
-    if @date == Date.today.to_s
+    if @date == Time.zone.today.to_s
       #Emfanise pinaka gia tis epomenes 24 wres
-      time_now =  Time.now.to_s.split(" ")[1][0...-3]
-      # @tomorrow = ((Date.civil(params[:start_date][:year].to_i,params[:start_date][:month].to_i,
-      #      params[:start_date][:day].to_i)) + 1).to_s
-      @tomorrow = (Date.today + 1.day).to_s
+      time_now =  Time.zone.now.to_s.split(" ")[1][0...-3]
+      @tomorrow = (Time.zone.today + 1.day).to_s
+      
+      #Metavlhtes pou tis xrhsimopoiw otan kanw request gia ta leases 
+      today_in_utc = Time.zone.now.utc.iso8601.split('T')[0]
+      tomorrow_in_utc = 1.day.from_now.utc.iso8601.split('T')[0]
 
-      puts time_now
-      puts @tomorrow
+      # puts "today and tomorrow to utc"
+      # puts today_in_utc
+      # puts tomorrow_in_utc
+      # puts time_now
+      # puts @tomorrow
 
       today_and_tommorow_columns = []
       today_and_tommorow_columns << "Name"
@@ -219,22 +223,53 @@ class SchedulerController < ApplicationController
 
       @reservation_table = rows.map{|r| Hash[ *today_and_tommorow_columns.zip(r).flatten ] }
       
-      @today_leases = getLeasesByDate(@date)
+      # @today_leases = getLeasesByDate(today_in_utc)
+      # @tomorrow_leases = getLeasesByDate(tomorrow_in_utc)
+
+      @today_leases = getLeasesByDate(Time.zone.today.to_s)
       @tomorrow_leases = getLeasesByDate(@tomorrow)
 
-      puts "today leases"
+      puts "Auta m epistrefei to getLeasesByDate(today_in_utc)"
       puts @today_leases
-      puts "tomorrow leases"
+      puts "Auta m epistrefei to getLeasesByDate(tomorrow_in_utc)"
       puts @tomorrow_leases
+      
 
-      puts @reservation_table
+      # puts "Auta einai ta today leases"
+      # puts @today_leases
+      # puts "Auta einai ta tomorrow leases"
+      # puts @tomorrow_leases
+
+      # puts "today leases"
+      # puts @today_leases
+      # puts "tomorrow leases"
+      # puts @tomorrow_leases
+
+      # puts @reservation_table
       @reservation_table.each do |iterate|
         @today_leases.each do |today_lease|
-          date_from = today_lease["valid_from"].split('T')[0]
-          date_until = today_lease["valid_until"].split('T')[0]
-          time_from = today_lease["valid_from"].split('T')[1][0...-4]
-          time_until = today_lease["valid_until"].split('T')[1][0...-4]
-          # puts "auta eunau ta dedomena mou "
+
+          date_from = today_lease["valid_from"].split(' ')[0]
+          date_until = today_lease["valid_until"].split(' ')[0]
+          time_from = today_lease["valid_from"].split(' ')[1][0...-3]
+          time_until = today_lease["valid_until"].split(' ')[1][0...-3]
+          
+          # puts "auta eunau ta dedomena mou prin"
+          # puts date_from
+          # puts date_until
+          # puts time_from
+          # puts time_until
+
+          # date_from = Time.strptime(today_lease["valid_from"], '%Y-%m-%dT%H:%M:%S%z').in_time_zone(Time.zone).to_s.split(' ')[0]
+          # date_until = Time.strptime(today_lease["valid_until"], '%Y-%m-%dT%H:%M:%S%z').in_time_zone(Time.zone).to_s.split(' ')[0]
+          # time_from = Time.strptime(today_lease["valid_from"], '%Y-%m-%dT%H:%M:%S%z').in_time_zone(Time.zone).to_s.split(' ')[1][0...-3]
+          # time_until = Time.strptime(today_lease["valid_until"], '%Y-%m-%dT%H:%M:%S%z').in_time_zone(Time.zone).to_s.split(' ')[1][0...-3]
+          
+
+          
+
+          # puts "PROSOXH !!!"
+          # puts "auta eunau ta dedomena mou meta"
           # puts date_from
           # puts date_until
           # puts time_from
@@ -247,14 +282,14 @@ class SchedulerController < ApplicationController
           #Auto me to prev einai proswrinh lush gia na apofeugw ta diplwtupa 
           prev_component = ""
           today_lease["components"].each do |component|
-            puts (@date + " " + component["component"]["name"]).to_s
+            #puts (@date + " " + component["component"]["name"]).to_s
             if component["component"]["name"] != prev_component && iterate["Name"] == component["component"]["name"]
               if date_from == date_until
                 if time_from < time_now && time_until > time_now
                   iterate.each_key do |key|
                     if key != "Name"
                       key_time = key.split(" ")[1] 
-                      puts key_time  
+                      #puts key_time  
                     
                       if key_time > time_now && key_time < time_until 
                         iterate[key] = 1
@@ -320,7 +355,7 @@ class SchedulerController < ApplicationController
                 end
               end
 
-              puts component["component"]["name"]
+              #puts component["component"]["name"]
               prev_component = component["component"]["name"]
             end
           end
@@ -328,15 +363,31 @@ class SchedulerController < ApplicationController
       end
       #puts @reservation_table
       @reservation_table.each do |iterate|
+        #puts @tommorrow_leases
         #Edw prepei na kanw gia to tomorrow 
         #Se auth thn periptwsh skeftomai to <= tou time_now san to orio tou programmatos 
         #pou tha emfanisw sto xrhsh 
         @tomorrow_leases.each do |tomorrow_lease|
-          date_from = tomorrow_lease["valid_from"].split('T')[0]
-          date_until = tomorrow_lease["valid_until"].split('T')[0]
-          time_from = tomorrow_lease["valid_from"].split('T')[1][0...-4]
-          time_until = tomorrow_lease["valid_until"].split('T')[1][0...-4]
-          # puts "auta eunau ta dedomena mou "
+
+          date_from = tomorrow_lease["valid_from"].split(' ')[0]
+          date_until = tomorrow_lease["valid_until"].split(' ')[0]
+          time_from = tomorrow_lease["valid_from"].split(' ')[1][0...-3]
+          time_until = tomorrow_lease["valid_until"].split(' ')[1][0...-3]
+
+
+          # puts "auta eunau ta dedomena mou gia to tommorrow ptin"
+          # puts date_from
+          # puts date_until
+          # puts time_from
+          # puts time_until
+
+          # date_from = Time.strptime(tomorrow_lease["valid_from"], '%Y-%m-%dT%H:%M:%S%z').in_time_zone(Time.zone).to_s.split(' ')[0]
+          # date_until = Time.strptime(tomorrow_lease["valid_until"], '%Y-%m-%dT%H:%M:%S%z').in_time_zone(Time.zone).to_s.split(' ')[0]
+          # time_from = Time.strptime(tomorrow_lease["valid_from"], '%Y-%m-%dT%H:%M:%S%z').in_time_zone(Time.zone).to_s.split(' ')[1][0...-3]
+          # time_until = Time.strptime(tomorrow_lease["valid_until"], '%Y-%m-%dT%H:%M:%S%z').in_time_zone(Time.zone).to_s.split(' ')[1][0...-3]
+
+
+          # puts "auta eunau ta dedomena mou gia to tommorrow meta"
           # puts date_from
           # puts date_until
           # puts time_from
@@ -437,15 +488,22 @@ class SchedulerController < ApplicationController
 
       @reservation_table.each do |iterate|
         @today_leases.each do |t_lease|
-          date_from = t_lease["valid_from"].split('T')[0]
-          date_until = t_lease["valid_until"].split('T')[0]
-          time_from = t_lease["valid_from"].split('T')[1][0...-4]
-          time_until = t_lease["valid_until"].split('T')[1][0...-4]
-          puts date_from
-          puts date_until
-          puts time_from
-          puts time_until
-          puts @date
+
+          # date_from = Time.strptime(t_lease["valid_from"], '%Y-%m-%dT%H:%M:%S%z').in_time_zone(Time.zone).to_s.split(' ')[0]
+          # date_until = Time.strptime(t_lease["valid_until"], '%Y-%m-%dT%H:%M:%S%z').in_time_zone(Time.zone).to_s.split(' ')[0]
+          # time_from = Time.strptime(t_lease["valid_from"], '%Y-%m-%dT%H:%M:%S%z').in_time_zone(Time.zone).to_s.split(' ')[1][0...-3]
+          # time_until = Time.strptime(t_lease["valid_until"], '%Y-%m-%dT%H:%M:%S%z').in_time_zone(Time.zone).to_s.split(' ')[1][0...-3]
+
+          date_from = t_lease["valid_from"].split(' ')[0]
+          date_until = t_lease["valid_until"].split(' ')[0]
+          time_from = t_lease["valid_from"].split(' ')[1][0...-3]
+          time_until = t_lease["valid_until"].split(' ')[1][0...-3]
+
+          # puts date_from
+          # puts date_until
+          # puts time_from
+          # puts time_until
+          # puts @date
 
           time_from = roundTimeFrom(time_from)
           time_until = roundTimeUntil(time_until)
@@ -615,16 +673,16 @@ class SchedulerController < ApplicationController
     ids = []
     reservations = []
     reservations = params[:reservations]
+    puts "Autes einai oi krathseis pou thelw na kanw"
+    puts reservations
     reservation_table = []
     if reservations == nil 
       redirect_to :back
       flash[:danger] = "You must select a timeslot to make a reservation. Please try again" 
     else
-      puts "Autes einai oi krathseis pou thelw na kanw "
-      puts reservations
+      # puts "Autes einai oi krathseis pou thelw na kanw "
+      # puts reservations
       #puts params[:user_slice]
-
-      #@date =  (Date.civil(params[:start_date][:year].to_i,params[:start_date][:month].to_i, params[:start_date][:day].to_i)).to_s
       
       #Vriskw an exw panw apo 2 hmeromhnies gia krathseis kai krataw sto reservation_date th mikroterh
 
@@ -653,11 +711,11 @@ class SchedulerController < ApplicationController
       puts "reservation_date_num"
       puts reservation_date_num
 
-      if reservation_date_num >= 2 || reservation_date == Date.today.to_s
+      if reservation_date_num >= 2 || reservation_date == Time.zone.today.to_s
 
-        today = Date.today.to_s
-        tomorrow = (Date.today + 1).to_s
-        time_now =  Time.now.to_s.split(" ")[1][0...-3]
+        today = Time.zone.today.to_s
+        tomorrow = (Time.zone.today + 1.day).to_s
+        time_now =  Time.zone.now.to_s.split(" ")[1][0...-3]
 
         #Upologismos gia sthles
         columns = Array.new(48)
@@ -724,6 +782,7 @@ class SchedulerController < ApplicationController
         num = 0
         valid_from = ""
         valid_until = ""
+        puts "Auto einai to reservation table afou to gemisw"
         puts reservation_table
         reservation_table.each do |element|
           element.each do |key,value|
@@ -741,8 +800,11 @@ class SchedulerController < ApplicationController
                 valid_until = key
                 #stelnw krathsh 
                 #element["Name"]
-                valid_from = valid_from + ":00 +0000"
-                valid_until = valid_until + ":00 +0000"
+
+                valid_from = valid_from + ":00 " #+ Time.zone.now.to_s.split(' ')[2]
+                valid_from = Time.zone.parse(valid_from)
+                valid_until = valid_until + ":00 " #+ Time.zone.now.to_s.split(' ')[2]
+                valid_until = Time.zone.parse(valid_until)
                 #reserveNode(node_list_uuids[element["Name"]],params[:user_slice],valid_from,valid_until)
                 
                 h = Hash.new
@@ -762,38 +824,25 @@ class SchedulerController < ApplicationController
                     array_with_reservations << h
                   end
                 end
-                # puts "Tha kanw krathsh me valid_from"
-                # puts valid_from
-                # puts "kai valid_until"
-                # puts valid_until
+                puts "Tha kanw krathsh me valid_from"
+                puts valid_from
+                puts "kai valid_until"
+                puts valid_until
                 # puts "Gia ton "+element["Name"] + "me uuid=" + @node_list_uuids[element["Name"]]
                 num = 0
               end
             end
           end
         end
-        # puts ""
-        # puts "Auto einai to array me ta reservation pou prepei na ginoun"
-        # puts array_with_reservations
+        puts ""
+        puts "Auto einai to array me ta reservation pou prepei na ginoun"
+        puts array_with_reservations
 
         array_with_reservations.each do |reservation|
           reserveNode(reservation["resources"],params[:user_slice],reservation["valid_from"],reservation["valid_until"])
         end
       redirect_to :back 
     end 
-  end
-
-  private
-
-  def set_timezone
-    default_timezone = Time.zone
-    client_timezone  = cookies[:timezone]
-    puts "Na to to coooookie"
-    puts client_timezone
-    Time.zone = client_timezone if client_timezone.present?
-    yield
-  ensure
-    Time.zone = default_timezone
   end
 
 end

@@ -36,7 +36,18 @@ module SchedulerHelper
     # puts "Test"
     # puts temp
     if ! temp.has_key?("exception")
-      leases =  temp["resource_response"]["resources"]
+      temp["resource_response"]["resources"].each do |lease|
+        #puts "Allagh wras sta leases sumfwna me to timezone tou xrhshth"
+        #puts lease["valid_from"]
+        lease["valid_from"] = Time.strptime(lease["valid_from"], '%Y-%m-%dT%H:%M:%S%z').in_time_zone(Time.zone).to_s
+        #puts lease["valid_from"]
+        #puts lease["valid_until"]
+        lease["valid_until"] = Time.strptime(lease["valid_until"], '%Y-%m-%dT%H:%M:%S%z').in_time_zone(Time.zone).to_s
+        #puts lease["valid_until"]
+
+        leases << lease
+
+      end
     end
     return leases
   end
@@ -51,7 +62,7 @@ module SchedulerHelper
           #puts lease["valid_from"].split('T')[0]
           #puts date
           #puts lease["valid_until"].split('T')[0]
-          if  lease["valid_from"].split('T')[0] <= date && lease["valid_until"].split('T')[0]>=date
+          if  lease["valid_from"].split(' ')[0] <= date && lease["valid_until"].split(' ')[0]>=date
             #puts "mpika"
             today_leases << lease
           end
@@ -68,10 +79,10 @@ module SchedulerHelper
     leases.each do |lease|
       if lease["status"] == "accepted"
         if lease["account"]["name"] == slice
-          if lease["valid_until"].split('T')[0] > Date.today.to_s 
+          if lease["valid_until"].split(' ')[0] > Time.zone.today.to_s 
             this_slice_leases << lease
-          elsif lease["valid_until"].split('T')[0] == Date.today.to_s 
-            if lease["valid_until"].split('T')[1][0...-4] > Time.now.to_s.split(' ')[1][0...-3]
+          elsif lease["valid_until"].split(' ')[0] == Time.zone.today.to_s 
+            if lease["valid_until"].split(' ')[1][0...-3] > Time.zone.now.to_s.split(' ')[1][0...-3]
               this_slice_leases << lease
             end   
           end
@@ -183,15 +194,18 @@ module SchedulerHelper
     
 
     puts "Gia na doume tous xronous"
-    puts Time.now
+    puts Time.zone.now
 
     if params[:start_date] != ""
-      valid_from = params[:start_date] + ":00 +0000"
+      valid_from_1 = params[:start_date] + ":00 "+ Time.zone.now.to_s.split(' ')[2]
     else
-      time_now =  Time.now.to_s.split(" ")[1][0...-3]
+      time_now =  Time.zone.now.to_s.split(" ")[1][0...-3]
       time_from = roundTimeUp(time_now)
-      valid_from_1 = Time.now.to_s.split(" ")[0] + " " +time_from+ ":00 +0000"
+      valid_from_1 = Time.zone.now.to_s.split(" ")[0] + " " +time_from+ ":00 " + Time.zone.now.to_s.split(' ')[2] 
     end
+
+    puts "valid_from_1"
+    puts valid_from_1
 
     #Gia nodes
     if params[:number_of_nodes] != ""
@@ -250,6 +264,11 @@ module SchedulerHelper
       flash[:danger] = response
     else    
       puts response
+      response["resource_response"]["resources"].each do |element|
+        element["valid_from"] = Time.zone.parse(element["valid_from"]).to_s
+        element["valid_until"] = Time.zone.parse(element["valid_until"]).to_s
+      end
+
       return response
     end
   end
@@ -317,6 +336,17 @@ module SchedulerHelper
       puts "Something went wrong"
       puts response
     end
+  end
+
+  def set_timezone
+    default_timezone = Time.zone
+    client_timezone  = cookies[:timezone]
+    puts "Na to to coooookie"
+    puts client_timezone
+    Time.zone = client_timezone if client_timezone.present?
+    yield
+  ensure
+    Time.zone = default_timezone
   end
 
 end

@@ -52,17 +52,17 @@ module NodeStatusHelper
     #puts hash.inspect
     node_id = "node"+node_id
     #puts node_id
-    date_now = Time.now.to_s.split(" ")[0]
-    time_now = Time.now.to_s.split(" ")[1][0...-3]
-    time = date_now+"T"+time_now
+    # date_now = Time.zone.now.to_s.split(" ")[0]
+    # time_now = Time.zone.now.to_s.split(" ")[1][0...-3]
+    # time = date_now+"T"+time_now
     #puts time
-
+    time = Time.zone.now.to_s
 
     hash.each_value do |value|
       value.each do |reservation|
         #if reservation != nil
           reservation["components"].each do |element|
-            if element["component"]["name"] == node_id && reservation["valid_from"].to_s[0...-4]<= time && reservation["valid_until"].to_s[0...-4] > time
+            if element["component"]["name"] == node_id && reservation["valid_from"].to_s<= time && reservation["valid_until"].to_s > time
               return true
             end
           end
