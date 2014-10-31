@@ -21,7 +21,6 @@ module SchedulerHelper
   end
 
   def getAccounts
-    #http = "https://83.212.32.165:8001/resources/accounts"
     broker_url = APP_CONFIG['broker_ip'] + ':' + APP_CONFIG['broker_port'].to_s
     http = broker_url + "/resources/accounts"
     res = httpGETRequest(http)
@@ -179,7 +178,7 @@ module SchedulerHelper
       puts "Something went wrong"
       puts response
     end
-    
+    return response
   end
 
   def unboundRequest(params)
@@ -197,29 +196,31 @@ module SchedulerHelper
     puts Time.zone.now
 
     if params[:start_date] != ""
-      valid_from_1 = params[:start_date] + ":00 "+ Time.zone.now.to_s.split(' ')[2]
+      valid_from = params[:start_date] + ":00 "
+      valid_from = Time.zone.parse(valid_from)
     else
       time_now =  Time.zone.now.to_s.split(" ")[1][0...-3]
       time_from = roundTimeUp(time_now)
-      valid_from_1 = Time.zone.now.to_s.split(" ")[0] + " " +time_from+ ":00 " + Time.zone.now.to_s.split(' ')[2] 
+      valid_from = Time.zone.now.to_s.split(" ")[0] + " " +time_from+ ":00 "
+      valid_from = Time.zone.parse(valid_from)
     end
 
-    puts "valid_from_1"
-    puts valid_from_1
+    puts "valid_from"
+    puts valid_from
 
     #Gia nodes
     if params[:number_of_nodes] != ""
       if params[:duration_t1] != ""
         if params[:domain1] != ""
-          h1 = { type: "Node", exclusive: true, duration: params[:duration_t1].to_i, valid_from: valid_from_1, domain: params[:domain1]}
+          h1 = { type: "Node", exclusive: true, duration: params[:duration_t1].to_i, valid_from: valid_from, domain: params[:domain1]}
         else
-          h1 = { type: "Node", exclusive: true, duration: params[:duration_t1].to_i, valid_from: valid_from_1}
+          h1 = { type: "Node", exclusive: true, duration: params[:duration_t1].to_i, valid_from: valid_from}
         end
       else
         if params[:domain1] != ""
-          h1 = { type: "Node", exclusive: true, valid_from: valid_from_1, domain: params[:domain1]}
+          h1 = { type: "Node", exclusive: true, valid_from: valid_from, domain: params[:domain1]}
         else
-          h1 = { type: "Node", exclusive: true, valid_from: valid_from_1}
+          h1 = { type: "Node", exclusive: true, valid_from: valid_from}
         end
       end      
 

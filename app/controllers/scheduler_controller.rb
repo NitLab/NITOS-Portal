@@ -157,9 +157,9 @@ class SchedulerController < ApplicationController
       @date = Time.zone.today.to_s
     else
       @date = params[:start_date].split(" ")[0]
-      puts "date_to_utc"
-      date_to_utc = Time.zone.parse(params[:start_date]).utc.to_s.split(' ')[0]
-      puts date_to_utc 
+      # puts "date_to_utc"
+      # date_to_utc = Time.zone.parse(params[:start_date]).utc.to_s.split(' ')[0]
+      # puts date_to_utc 
     end
     puts "@date"
     puts @date
@@ -167,10 +167,10 @@ class SchedulerController < ApplicationController
     puts params[:start_date]
 
     node_obj = Nodes.new
+    @resources_list_names = node_obj.get_resources_list_names
     @node_list = node_obj.get_node_list
-    @node_list_names = node_obj.get_node_list_names
     @user_slices = getSlices()
-    @details_of_nodes = node_obj.get_details_of_nodes
+    @details_of_resources = node_obj.get_details_of_resources
 
     columns = Array.new(48)
     columns[0]= "Name"
@@ -182,15 +182,16 @@ class SchedulerController < ApplicationController
       end
     end
 
-    num = @node_list_names.length
+    num = @resources_list_names.length
     rows = Array.new(num){Array.new(49,0)}
 
     $i=0
 
     while $i< num do
-      rows[$i][0] = @node_list_names[$i]
+      rows[$i][0] = @resources_list_names[$i]
       $i +=1
     end
+
     
     if @date == Time.zone.today.to_s
       #Emfanise pinaka gia tis epomenes 24 wres
@@ -246,6 +247,7 @@ class SchedulerController < ApplicationController
       # puts @tomorrow_leases
 
       # puts @reservation_table
+
       @reservation_table.each do |iterate|
         @today_leases.each do |today_lease|
 
@@ -470,6 +472,7 @@ class SchedulerController < ApplicationController
           end
         end
       end
+      puts @reservation_table
     else
       @today_leases = getLeasesByDate(@date)
 
@@ -668,7 +671,7 @@ class SchedulerController < ApplicationController
   def make_reservation
     #Apo dw kai katw einai to palio resevation 
     node_obj = Nodes.new
-    node_list_uuids = node_obj.get_node_list_uuids
+    hash_details_of_resources = node_obj.get_details_of_resources
     # Vriskw poioi komvoi einai pros krathsh 
     ids = []
     reservations = []
@@ -808,14 +811,14 @@ class SchedulerController < ApplicationController
                 #reserveNode(node_list_uuids[element["Name"]],params[:user_slice],valid_from,valid_until)
                 
                 h = Hash.new
-                h = {"valid_from" => valid_from, "valid_until"=> valid_until, "resources"=> [node_list_uuids[element["Name"]]] }
+                h = {"valid_from" => valid_from, "valid_until"=> valid_until, "resources"=> [hash_details_of_resources[element["Name"]]["uuid"]] }
                 if array_with_reservations.length == 0
                   array_with_reservations << h
                 else
                   flag = 0
                   array_with_reservations.each do |reservation|
-                    if reservation["valid_from"] == valid_from && reservation["valid_until"] == valid_until && !reservation["resources"].include?(node_list_uuids[element["Name"]])
-                      reservation["resources"] << node_list_uuids[element["Name"]]
+                    if reservation["valid_from"] == valid_from && reservation["valid_until"] == valid_until && !reservation["resources"].include?(hash_details_of_resources[element["Name"]]["uuid"])
+                      reservation["resources"] << hash_details_of_resources[element["Name"]]["uuid"]
                       flag =1
                       break                      
                     end
@@ -838,9 +841,18 @@ class SchedulerController < ApplicationController
         puts "Auto einai to array me ta reservation pou prepei na ginoun"
         puts array_with_reservations
 
+        results_of_reservations = []
         array_with_reservations.each do |reservation|
-          reserveNode(reservation["resources"],params[:user_slice],reservation["valid_from"],reservation["valid_until"])
+          results_of_reservations << reserveNode(reservation["resources"],params[:user_slice],reservation["valid_from"],reservation["valid_until"])
         end
+        
+        flash_msg = []
+        results_of_reservations.each do |result|
+          if !result.to_s.include?("HTTPOK")     
+            flash_msg << result.to_s       
+          end
+        end      
+        flash[:danger] = flash_msg
       redirect_to :back 
     end 
   end

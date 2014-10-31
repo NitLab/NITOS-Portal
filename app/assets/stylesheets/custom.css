@@ -230,17 +230,7 @@ a, a:hover, a:focus {
 
 /*sidebar*/
 
-#sidebar{
-  background: none repeat scroll 0 0 #2a3542;
-  height: 100%;
-  position: fixed;
-  width: 210px;
 
-}
-
-.list-group-submenu {
-  margin-left:10px;
-}
 
 /*Unboun Requests*/
 
@@ -370,14 +360,17 @@ td.td-checkbox{
 
 td.td-checkbox:hover, td.td-checkbox:active{
   background-color: #428bca;
+  /*background-color: #305086;*/
   
 }
 .regular-checkbox + label:hover { 
   background-color: #428bca;
+  /*background-color: #305086;*/
 }
 
 .regular-checkbox:checked + label:hover { 
   background-color: #428bca;
+  /*background-color: #305086;*/
 }
 
 label {
@@ -446,6 +439,23 @@ label {
 
 .button-holder {
   float: left;
+}
+
+#notes-lock{
+    left: 0px!important;
+    top: 0px!important;
+}
+
+#notes-check{
+  font-size: 22px;
+}
+
+#notes-timezone{
+  font-weight: bold;
+}
+
+.notes{
+  border-top: 0px!important;
 }
 
 /*
@@ -552,4 +562,104 @@ span.glyphicon-lock {
 }
 #contact{
   background: none repeat scroll 0 0 #8075c4;
+}
+
+/*Profile*/
+.profile-nav .user-heading {
+    background: none repeat scroll 0 0 #41cac0;
+    border-radius: 4px 4px 0 0;
+    color: #fff;
+    padding: 30px;
+    text-align: center;
+}
+
+.profile-nav ul > li:last-child > a:last-child {
+    border-radius: 0 0 4px 4px;
+}
+.profile-nav ul > li > a {
+    /*border-left: 5px solid #fff;*/
+    border-radius: 0;
+    color: #89817f;
+}
+
+a, a:hover, a:focus {
+    outline: medium none;
+    text-decoration: none;
+}
+
+
+a, a:hover, a:focus {
+    outline: medium none;
+    text-decoration: none;
+}
+
+.profile-nav .user-heading h1 {
+    font-size: 30px;
+    font-weight: 300;
+    margin-bottom: 5px;
+}
+
+.profile-nav .user-heading p {
+    font-size: 18px;
+}
+
+/*Sidebar*/
+@media screen and (min-width: 768px) {
+  #sidebar{
+  background: none repeat scroll 0 0 #2a3542;
+  height: 100%;
+  position: fixed;
+  width: 210px;
+}
+
+.list-group-submenu {
+  margin-left:10px;
+}
+
+ 
+}
+
+/*Header*/
+
+.navbar-inverse .navbar-nav > li > a {
+    color: #fff!important;
+}
+
+.navbar-inverse .navbar-nav > li > a:hover {
+    color: #F18A1C !important;
+}
+.navbar-inverse {
+  /*background-color: #2a3542!important;
+    border-color: #2a3542!important;*/
+    background-color: #305086!important;
+    border-color: #305086!important;
+}
+
+/*Home Page*/
+
+#create_account_thumbnail{
+  background-color: #0097AA;
+}
+
+#lg_in_out_thumbnail{
+  background-color: #305086;
+}
+
+#tutorial_thumbnail{
+  background-color: #DA542E;
+}
+
+#contact_thumbnail{
+  background-color: #0097AA;
+
+}
+
+.thumbnail{
+  padding-top: 56px;
+  padding-bottom: 25px;
+}
+
+.thumbnail h3{
+  color:#fff;
+  text-align: center;
 }

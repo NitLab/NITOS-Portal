@@ -46,7 +46,7 @@
                           time = Time.zone.now.to_s
 
                           # if reservation["valid_from"].to_s[0...-4]<= time && reservation["valid_until"].to_s[0...-4] > time
-                          if reservation["valid_from"].to_s<= time && reservation["valid_until"].to_s[0...-4] > time%>
+                          if reservation["valid_from"].to_s<= time && reservation["valid_until"].to_s > time%>
                             <tr style = "background: #A4E8FF">
                           <%else%>
                             <tr>
@@ -59,7 +59,11 @@
                                 resources_name_type = []
                                 reservation["components"].each do |element|
                                   this_resource = []
-                                  this_resource << element["component"]["name"]
+                                  if element["component"]["name"].start_with? ("node")
+                                    this_resource << element["component"]["name"]
+                                  else
+                                    this_resource << "channel"+element["component"]["name"]
+                                  end
                                   this_resource << element["component"]["type"]
                                   resources_name_type << this_resource
                                 end

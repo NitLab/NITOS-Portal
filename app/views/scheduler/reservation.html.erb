@@ -17,107 +17,207 @@
       <% end %>
     </div>
   </div>
-  
+
+  <%if @reservation_table.length == 0 %>
+    <h1>Please refresh or try later!</h1>
+  <%else%>
+
+    <div class = "row">
+      <div class = "col-lg-12">    
+        <section class = "panel ">
+          <%if @date == Time.zone.today.to_s %>
+            <header class="panel-heading"> Reservation table for the next 24 hours</header>
+          <%else%>
+            <header class="panel-heading"> Reservation table for <%=@date%></header>
+          <%end%>
+          <div class = "panel-body">
+
+            <div class="table-responsive">
+
+              <%=form_tag make_reservation_path do%>
+                <%= select_tag(:user_slice, options_for_select(@user_slices)) %>
+
+                <table class="table table-bordered table-striped">
+
+                  <%if @date == Time.zone.today.to_s %>
+                    <%
+                    num_of_cells = 0
+                    @reservation_table[0].each_key do |key|
+                      
+                      if key.split(" ")[0] == @date
+                        num_of_cells += 1
+                      end
+                      
+                    end
+                    %>
+                    <tr>
+                      <td></td>
+                      <td></td>
+                      <%if num_of_cells !=0%>
+                        <td colspan= <%=num_of_cells.to_s%>><%=@date%></td>
+                      <%end%>
+                      <td colspan=<%=(48-num_of_cells).to_s%>><%=@tomorrow%></td>
+                    </tr>
+                  <%end%>
+
+                  <tr>
+                    <td></td>
+                    <%@reservation_table[0].each_key do |key|%>
+                      <td><%=key.split(" ")[1]%></td>
+                    <%end%>
+                  </tr>
+
+                  <%@reservation_table.each do |iterate|%>
+                  <%if iterate.values[0].start_with? ("node")%>
+                    <tr title = "<%=iterate.values[0]%>">
+                  <%else%>
+                    <tr title = "<%="channel"+iterate.values[0]%>">
+                  <%end%>
+                      <td  >
+                        <img src="images/details_open.png" data-toggle="collapse" data-target="#details_for_<%=iterate.values[0]%>" id = "img_details_for_<%=iterate.values[0]%>" class ="button-node-details">
+                        
+                      </td>
+
+                      <%iterate.each do |key, value|%>  
+                        <%if key == "Name"%>
+                          <td>
+                            <%if value.start_with? ("node")%>
+                              <%=value%>  
+                            <%else%>
+                              <%="channel"+value%>
+                            <%end%>                
+                          </td>
+                        <%else%>  
+                          <%if value == 1%>        
+                            <td>
+                              <span class = "glyphicon glyphicon-lock"></span>                             
+                            </td>
+                          <%else%>
+                            <td class = "td-checkbox">
+                              <%timh = iterate.values[0]+"/"+key %>
+                              <%=check_box_tag "reservations[]",iterate.values[0]+"/"+key,false, :class => "regular-checkbox big-checkbox",:id => timh%>
+                              <label for="<%=timh%>"></label>                      
+                            </td>
+                          <%end%>
+                        <%end%>
+                      <%end%>
+                    </tr>
+
+                    <tr class = "collapse" id = "details_for_<%=iterate.values[0]%>">
+
+                      <%if iterate.values[0].start_with? ("node")%>
+                        <td colspan="50">
+                          <p>Deatails for node <%=iterate.values[0]%></p>
+                          <!-- <ul>
+                            <li>hardware_type:  <%=@details_of_resources[iterate.values[0]]["hardware_type"]%></li>
+                            <li>domain:         <%=@details_of_resources[iterate.values[0]]["domain"]%></li>
+                            <li>cpu_type:       <%=@details_of_resources[iterate.values[0]]["cpu"]["cpu_type"]%></li>
+                            <li>ram:            <%=@details_of_resources[iterate.values[0]]["ram"]%></li>
+                            <li>hd_capacity     <%=@details_of_resources[iterate.values[0]]["hd_capacity"]%></li>
+                            <li>
+                              interfaces:     <ul><%@details_of_resources[iterate.values[0]]["interfaces"].each do |interface| %>
+                                                    <li><%=interface["name"]%></li>
+                                                  <%end%>
+                                              </ul>
+                            </li>
+                          </ul> -->
+
+                          <dl class ="dl-horizontal">
+                            <dt>hardware_type:</dt>
+                            <dd><%=@details_of_resources[iterate.values[0]]["hardware_type"]%></dd>
+                            <dt>domain:</dt>
+                            <dd><%=@details_of_resources[iterate.values[0]]["domain"]%></dd>
+                            <dt>cpu_type:</dt>
+                            <dd><%=@details_of_resources[iterate.values[0]]["cpu"]["cpu_type"]%></dd>
+                            <dt>ram:</dt>
+                            <dd><%=@details_of_resources[iterate.values[0]]["ram"]%></dd>
+                            <dt>hd_capacity:</dt>
+                            <dd><%=@details_of_resources[iterate.values[0]]["hd_capacity"]%></dd>
+                            <dt>interfaces:</dt>
+                            <dd></dd>
+
+                            
+                            
+                              
+                                <%@details_of_resources[iterate.values[0]]["interfaces"].each do |interface| %>
+                                    </br>
+                                    <dt>role:</dt><dd><%=interface["role"]%></dd>
+                                    <dt>address:</dt><dd><%if interface["ip"]!=nil%><%=interface["ip"]["address"]%><%end%></dd>
+                                    <dt>mac:</dt><dd><%=interface["mac"]%></dd>
+                                    <dt>description:</dt><dd><%=interface["description"]%></dd>
+                                    <dt>domain:</dt><dd><%=interface["domain"]%></dd>
+                                  
+                                <%end%>
+                              
+                            
+                            
+                                               
+                            
+                            
+                        </dl>
+                          
+                        </td>
+                      <%else %>
+                        <td colspan="50">
+                          <p>Deatails for channel <%=iterate.values[0]%></p>
+                          <!-- <ul>
+                            <li>frequency:  <%=@details_of_resources[iterate.values[0]]["frequency"]%></li>
+                            <li>domain:         <%=@details_of_resources[iterate.values[0]]["domain"]%></li>
+                          </ul> -->
+                          <dl class ="dl-horizontal">
+                            <dt>frequency:</dt>
+                            <dd><%=@details_of_resources[iterate.values[0]]["frequency"]%></dd>
+                            <dt>domain:</dt>
+                            <dd><%=@details_of_resources[iterate.values[0]]["domain"]%></dd>
+                          </dl>
+                        </td>
+                      <%end%>
+                    </tr>
+
+                  <%end%>
+                </table>
+                <%= submit_tag "Make reservations"%>
+              <% end %>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  <%end%>
+
   <div class = "row">
-    <div class="col-sm-4">
+    <div class="col-lg-3">
       <div class="panel panel-default">
         <div class="panel-body">
-          <span class="glyphicon glyphicon-lock"> : Reserved Timeslots</span>
+          <div class="table-responsive">
+            <table class="table" id="notes">
+              <tbody>
+                <tr>
+                  <td class = "notes"><span class="glyphicon glyphicon-lock" id = "notes-lock"></span></td>
+                  <td class = "notes">Reserved Timeslots</td>      
+                </tr>
+                <tr>
+                  <td class = "notes"><span id = "notes-check">✔</span></td>
+                  <td class = "notes">Checked</td>      
+                </tr>
+                <tr>
+                  <td class = "notes"><span id = "notes-timezone"><%=Time.zone.now.to_s.split(' ')[2]%></span></td>
+                  <td class = "notes">Timezone</td>      
+                </tr>
+              </tbody>              
+            </table>
+          </div>
         </div>
       </div>
     </div>
   </div>
-
-  <div class = "row">
-    <div class = "col-lg-12">    
-      <section class = "panel ">
-        <%if @date == Date.today.to_s %>
-          <header class="panel-heading"> Reservation table for the next 24 hours</header>
-        <%else%>
-          <header class="panel-heading"> Reservation table for <%=@date%></header>
-        <%end%>
-        <div class = "panel-body">
-
-          <div class="table-responsive">
-
-            <%=form_tag make_reservation_path do%>
-              <%= select_tag(:user_slice, options_for_select(@user_slices)) %>
-
-              <table class="table table-bordered table-striped">
-
-                <tr>
-                  <td></td>
-                  <%@reservation_table[0].each_key do |key|%>
-                    <td><%=key.split(" ")[1]%></td>
-                  <%end%>
-                </tr>
-
-                <%@reservation_table.each do |iterate|%>
-                  <tr title = "<%=iterate.values[0]%>">
-
-                    <td  >
-                      <img src="images/details_open.png" data-toggle="collapse" data-target="#details_for_<%=iterate.values[0]%>" id = "img_details_for_<%=iterate.values[0]%>" class ="button-node-details">
-                      
-                    </td>
-
-                    <%iterate.each do |key, value|%>  
-                      <%if key == "Name"%>
-                        <td>
-                          <%=value%>                  
-                        </td>
-                      <%else%>  
-                        <%if value == 1%>        
-                          <td>
-                            <span class = "glyphicon glyphicon-lock"></span>                             
-                          </td>
-                        <%else%>
-                          <td class = "td-checkbox">
-                            <%timh = iterate.values[0]+"/"+key %>
-                            <%=check_box_tag "reservations[]",iterate.values[0]+"/"+key,false, :class => "regular-checkbox big-checkbox",:id => timh%>
-                            <label for="<%=timh%>"></label>                      
-                          </td>
-                        <%end%>
-                      <%end%>
-                    <%end%>
-                  </tr>
-
-                  <tr class = "collapse" id = "details_for_<%=iterate.values[0]%>">
-                    <td colspan="50">
-                      <p>Deatails for node <%=iterate.values[0]%></p>
-                      <ul>
-                        <li>hardware_type:  <%=@details_of_nodes[iterate.values[0]]["hardware_type"]%></li>
-                        <li>domain:         <%=@details_of_nodes[iterate.values[0]]["domain"]%></li>
-                        <li>cpu_type:       <%=@details_of_nodes[iterate.values[0]]["cpu"]["cpu_type"]%></li>
-                        <li>ram:            <%=@details_of_nodes[iterate.values[0]]["ram"]%></li>
-                        <li>hd_capacity     <%=@details_of_nodes[iterate.values[0]]["hd_capacity"]%></li>
-                        <li>
-                          interfaces:     <ul><%@details_of_nodes[iterate.values[0]]["interfaces"].each do |interface| %>
-                                                <li><%=interface["name"]%></li>
-                                              <%end%>
-                                          </ul>
-                        </li>
-                      </ul>
-                      
-                    </td>
-                  </tr>
-
-                <%end%>
-              </table>
-              <%= submit_tag "Make reservations" %>
-            <% end %>
-          </div>
-        </div>
-      </section>
-    </div>
-  </div>
-
 
 <script type="text/javascript">
   $(function () {
     var today = moment();
     $('#datetimepicker1').datetimepicker({
       minDate: today,
-      pickTime: false
+      pickTime: false,
     });
   });
 </script>

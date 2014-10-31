@@ -8,7 +8,6 @@ class NodeStatusController < ApplicationController
   def node_status
     node_obj = Nodes.new
     @node_list = node_obj.get_node_list
-    node_list_names = node_obj.get_node_list_names
 
     @user_slices = []
     @user_slices = getSlices

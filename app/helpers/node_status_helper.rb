@@ -13,6 +13,16 @@ module NodeStatusHelper
       
   end
 
+  def getChannelsList
+    broker_url = APP_CONFIG['broker_ip'] + ':' + APP_CONFIG['broker_port'].to_s
+    result = HTTParty.get(broker_url + "/resources/channels", :verify => false)
+    temp2 = JSON.parse(result.body)
+
+    channels_data =  temp2["resource_response"]["resources"]
+    return channels_data
+      
+  end
+
   def getNodeStatus(node_id)         
      cm_url = APP_CONFIG['cm_ip'] + ':' + APP_CONFIG['cm_port'].to_s
      res = HTTParty.get(cm_url+"/resources/node/"+ node_id)
