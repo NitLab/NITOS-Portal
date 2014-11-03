@@ -235,14 +235,14 @@ module SchedulerHelper
     #Gia channels
     if params[:number_of_channels] != ""
       if params[:duration_t1] != ""
-        if params[:domain2] != ""
-          h1 = { type: "Channel", exclusive: true, duration: params[:duration_t1].to_i, valid_from: valid_from, domain: params[:domain2]}
+        if params[:domain1] != ""
+          h1 = { type: "Channel", exclusive: true, duration: params[:duration_t1].to_i, valid_from: valid_from, domain: params[:domain1]}
         else
           h1 = { type: "Channel", exclusive: true, duration: params[:duration_t1].to_i, valid_from: valid_from}
         end
       else
-        if params[:domain2] != ""
-          h1 = { type: "Channel", exclusive: true, valid_from: valid_from, domain: params[:domain2]}
+        if params[:domain1] != ""
+          h1 = { type: "Channel", exclusive: true, valid_from: valid_from, domain: params[:domain1]}
         else
           h1 = { type: "Channel", exclusive: true, valid_from: valid_from}
         end

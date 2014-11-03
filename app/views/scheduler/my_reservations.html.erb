@@ -111,7 +111,18 @@
                       <tbody>
                         <%reservation_num = 1%>
                         <%value.each do |reservation|%>
-                          <tr>
+                          <%
+                          # date_now = Time.zone.now.to_s.split(" ")[0]
+                          # time_now = Time.zone.now.to_s.split(" ")[1][0...-3]
+                          # time = date_now+"T"+time_now
+                          time = Time.zone.now.to_s
+
+                          # if reservation["valid_from"].to_s[0...-4]<= time && reservation["valid_until"].to_s[0...-4] > time
+                          if reservation["valid_from"].to_s<= time && reservation["valid_until"].to_s > time%>
+                            <tr style = "background: #A4E8FF">
+                          <%else%>
+                            <tr>
+                          <%end%>
                             <td><%=reservation_num%></td>
                             <td> <%= reservation["valid_from"]%> </td>
                             <td> <%= reservation["valid_until"]%> </td>
@@ -155,8 +166,3 @@
     </section>
   </div>
 </div>
-
-<!-- <%=@slices%> -->
-
-<!-- <%=@my_reservations%> -->
-

@@ -1,25 +1,25 @@
 <% provide(:title, 'About Us') %>
 
 <div class = "row">
-  <div class = "col-lg-12">
+  <div class = "col-md-offset-2 col-lg-9 col-lg-8">
     <section class = "panel ">
-      <header class="panel-heading"> About Us </header>
-      <div class = "panel-body">
+      <header class="panel-heading" id="about-heading"> About Us </header>
+      <div class = "panel-body" id = "about-page">
         <p>Through this portal, people can create an account, get access and experiment in NITOS FI Facility, which stands for Network Implementation Testbed using Open Source platforms Future Internet Facility.</p>
 
-        
-        <p>The main components of NITOS FI facility are:</p>
-
+        <div class="colored-line"> </div>
+        <h2>The main components of NITOS FI facility are:</h2>
+        <div class="colored-line"> </div>
         <div class = "about-list">
           <ul>
 
             <li>Two Wi-Fi experimentation testbeds, which consist of powerful nodes (some of them mobile), that also feature multiple wireless interfaces and allow for experimentation with heterogeneous (Wi-Fi, Bluetooth, ZigBee) wireless technologies.</li>
 
+            <%= image_tag("IMG_5222_after.jpg", :alt => "photo outdoor", :height => "210", :width => "210") %>
+
+            <%= image_tag("SAM_0626.JPG", :alt => "photo outdoor", :height => "210", :width => "210") %>
+
             
-
-            <%= image_tag("IMG_5222_after.jpg", :alt => "photo outdoor", :height => "225", :width => "255") %>
-
-            <%= image_tag("SAM_0626.JPG", :alt => "photo outdoor", :height => "225", :width => "255") %>
 
             <li>A 4G testbed which consists of WiMAX and LTE Base Stations and the necessary equipment for enabling WiMAX/LTE connectivity to the wireless nodes.</li>
 
@@ -30,11 +30,12 @@
           </ul>
         </div>
 
+        
            
 
-      
+        <p>
        A researcher can <a href="http://nitlab.inf.uth.gr/doc/">read about how to use the resources of NITOS</a> and can schedule a reservation in the testbed.
-        
+      </p>
 
       </div>
     </section>

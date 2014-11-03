@@ -1,50 +1,75 @@
-
-</br>
-</br>
-</br>
-</br>
-</br>
-</br>
+<div class = "row home-margin">
 <div class="row">
-  <div class="col-sm-6 col-md-offset-3 col-md-3 ">
-
-    <div class="thumbnail" id = "create_account_thumbnail">
-      <img src="/images/User.png">
-      <div class="caption">
-        <h3>Create an account</h3>
+  <div class="col-sm-6 col-md-offset-3 col-md-4 col-lg-3">
+    <a href="/signup">
+      <div class="thumbnail" id = "create_account_thumbnail">
+        <img src="/images/contact-icon.png">
+        <div class="caption">
+          <h3>Create an account</h3>
+        </div>
       </div>
-    </div>
+    </a>
   </div>
 
-  <div class="col-sm-6 col-md-3">
-    <div class="thumbnail" id = "lg_in_out_thumbnail">
-      <img src="/images/Lock.png">
-      <div class="caption">
-        <h3>Log in</h3>
-                
+  <div class="col-sm-6 col-md-4 col-lg-3">
+    <a href="/contact">
+      <div class="thumbnail" id = "contact_thumbnail">
+        <img src="/images/Mail3.png">
+        <div class="caption">
+          <h3>Contact</h3>        
+        </div>
       </div>
-    </div>
+    </a>
   </div>
+
+  
 </div>
 
 <div class="row">
-  <div class="col-sm-6 col-md-offset-3 col-md-3">
-    <div class="thumbnail" id="tutorial_thumbnail">
-      <img src="/images/Document.png">
-      <div class="caption">
-        <h3>Tutorial</h3>
+  
+
+  <div class="col-sm-6 col-md-offset-3 col-md-4 col-lg-3">
+    
+    <a href="http://nitlab.inf.uth.gr/doc/" target="_blank">
+      <div class="thumbnail" id="tutorial_thumbnail">
+        <img src="/images/Document.png">
+        <div class="caption">
+          <h3>Tutorial</h3>
+        </div>
       </div>
-    </div>
+    </a>
   </div>
 
-  <div class="col-sm-6 col-md-3">
-    <div class="thumbnail" id = "contact_thumbnail">
-      <img src="/images/Mail3.png">
-      <div class="caption">
-        <h3>Contact</h3>        
-      </div>
+  <% if signed_in? %>
+    <div class="col-sm-6 col-md-4 col-lg-3">
+      <%= link_to signout_path, method: "delete" do%>
+        <div class="thumbnail" id = "lg_in_out_thumbnail">
+          <img src="/images/Lock.png">
+          <div class="caption">
+            <h3>Sign out</h3>
+                    
+          </div>
+        </div>
+      <%end%>
     </div>
-  </div>
+  
+                
+  <% else %>
+    <div class="col-sm-6 col-md-4 col-lg-3">
+      <a href="/signin">
+        <div class="thumbnail" id = "lg_in_out_thumbnail">
+          <img src="/images/Lock.png">
+          <div class="caption">
+            <h3>Log in</h3>
+                    
+          </div>
+        </div>
+      </a>
+    </div>
+  <% end %>
+  
+</div>
+
 </div>
 
 <!-- <div class = "row">

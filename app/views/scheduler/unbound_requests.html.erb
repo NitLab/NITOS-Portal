@@ -48,7 +48,7 @@
                 <label class="col-lg-2 control-label">Choose time from</label>
                 <div class = "col-md-4 col-lg-4">
                   <div class='input-group date' id='datetimepicker2'>
-                    <input type='text' class="form-control" name="start_date" data-date-format="YYYY-MM-DD HH:mm"/>
+                    <input type='text' class="form-control" name="start_date" data-date-format="YYYY-MM-DD HH:mm Z" readonly="readonly"/>
                     <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
                     </span>
                   </div>
@@ -78,16 +78,16 @@
               </div>
 
               <div class = "form-group">
-                <label class="col-lg-2 control-label">Choose number of nodes<span class="required">(*)</span></label>
-                <div class = "col-lg-10">
-                  <%= number_field_tag(:number_of_nodes,nil, in: 1...20, step: 1) %>
+                <label class="col-lg-2 control-label">Select domain</label>
+                <div class = "col-md-4 col-lg-4">
+                <%= select_tag(:domain1, options_for_select([['omf:testserver', "omf:testserver"]]), class:"form-control",include_blank: true) %>
                 </div>
               </div>
 
               <div class = "form-group">
-                <label class="col-lg-2 control-label">Select domain of nodes</label>
-                <div class = "col-md-4 col-lg-4">
-                <%= select_tag(:domain1, options_for_select([['omf:testserver', "omf:testserver"]]), class:"form-control",include_blank: true) %>
+                <label class="col-lg-2 control-label">Choose number of nodes<span class="required">(*)</span></label>
+                <div class = "col-lg-10">
+                  <%= number_field_tag(:number_of_nodes,nil, in: 1...20, step: 1) %>
                 </div>
               </div>
 
@@ -98,12 +98,6 @@
                 </div>
               </div>
 
-              <div class = "form-group">
-                <label class="col-lg-2 control-label">Select domain of channels</label>
-                <div class = "col-md-4 col-lg-4">
-                <%= select_tag(:domain2, options_for_select([['omf:testserver', "omf:testserver"]]), class:"form-control",include_blank: true) %>
-                </div>
-              </div>
 
                 <div><%= submit_tag "Find resources" , class:"btn btn-danger btn-submit" %></div>
 

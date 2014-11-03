@@ -6,59 +6,126 @@ require "httparty"
 require "json"
 
 %>
+
+
 <div class = "row">
-  <p>Current Slice : 
-    <%@user_slices.each do |slice|%>
-      <%=slice + ","%>
-    <%end%>
-  </p>
+  <div class = "col-lg-12">
+    <section class = "panel ">
+      <header class="panel-heading"> Node Status </header>
+      <div class = "panel-body">
 
-  <p>Choose one of your slices, in order to check the status of its reserved nodes:</p>
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" role="tablist">
+          <%@hash_reserved_nodes.each_key do |key|%>
+            <%if key == @hash_reserved_nodes.keys[0]%>
+              <li class = "active"><a href="#<%=key%>" role="tab" data-toggle="tab"><%=key%></a></li>
+            <%else%>
+              <li><a href="#<%=key%>" role="tab" data-toggle="tab"><%=key%></a></li>
+            <%end%>
+          <%end%>
+        </ul>
 
-  <%= select_tag(:user_slice, options_for_select(@user_slices)) %>
+        <!-- Tab panes -->
+        <div class="tab-content">
+          <%@hash_reserved_nodes.each do |key,value|%>
+            <%if key == @hash_reserved_nodes.keys[0]%>
+
+              <div class="tab-pane fade in active" id="<%=key%>">
+                <div class = "col-lg-10">      
+                  <% @node_list.each do |element|%>
+                    
+                      <%if value.include?(element)%> 
+                                 
+                        <div id = "node_<%=element%>" class = "nodes">
+                          <p><%=element%></p>
+                          <p id = "node<%=element%>"></p>
+                      
+                          <div class = "on-off-status">
+                            <%= button_to "OFF", {:action => "set_node_off", :controller => "node_status", :node_id => element} ,:id =>"off_"+element , :remote => true, :disabled => false , :class => "btn btn-danger node-off"%>
+                      
+                            <%= button_to "ON", {:action => "set_node_on", :controller => "node_status", :node_id => element},:id =>"on_"+element, :remote => true, :disabled => true, :class => "btn btn-primary node-on" %>
+                          </div>
+
+                          <div class = "reset-status">
+                            <%= button_to "Reset", {:action => "reset_node", :controller => "node_status", :node_id => element},:id =>"reset"+element, :class => "btn btn-reset", :remote => true, :disabled => true %>
+                          </div>
+                        </div>
+                      <%else%>
+                        <div class = "disabled_nodes">
+
+                          <p><%=element%></p>
+                          <p id = "node<%=element%>"></p>
+                      
+                          <div class = "on-off-status">
+                            <%= button_to "OFF", {:action => "set_node_off", :controller => "node_status", :node_id => element} , :class => "btn btn-danger node-off" , :remote => true, :disabled => true %>
+                      
+                            <%= button_to "ON", {:action => "set_node_on", :controller => "node_status", :node_id => element}, :class => "btn btn-primary node-on", :remote => true, :disabled => true %>
+                          </div>
+
+                          <div class = "reset-status">
+                            <%= button_to "Reset", {:action => "reset_node", :controller => "node_status", :node_id => element}, :class => "btn btn-reset", :remote => true, :disabled => true %>
+                          </div>
+                        </div>
+                      <%end%> 
+                     
+                  <%end%>
+              </div>
+            </div>
+            <%else%>
+              <div class="tab-pane fade" id="<%=key%>">
+                <div class = "col-lg-10">      
+                  <% @node_list.each do |element|%>
+                    
+                      <%if value.include?(element)%> 
+                                 
+                        <div id = "node_<%=element%>" class = "nodes">
+                          <p><%=element%></p>
+                          <p id = "node<%=element%>"></p>
+                      
+                          <div class = "on-off-status">
+                            <%= button_to "OFF", {:action => "set_node_off", :controller => "node_status", :node_id => element} ,:id =>"off_"+element , :remote => true, :disabled => false , :class => "btn btn-danger node-off"%>
+                      
+                            <%= button_to "ON", {:action => "set_node_on", :controller => "node_status", :node_id => element},:id =>"on_"+element, :remote => true, :disabled => true, :class => "btn btn-primary node-on" %>
+                          </div>
+
+                          <div class = "reset-status">
+                            <%= button_to "Reset", {:action => "reset_node", :controller => "node_status", :node_id => element},:id =>"reset"+element, :class => "btn btn-reset", :remote => true, :disabled => true %>
+                          </div>
+                        </div>
+                      <%else%>
+                        <div class = "disabled_nodes">
+
+                          <p><%=element%></p>
+                          <p id = "node<%=element%>"></p>
+                      
+                          <div class = "on-off-status">
+                            <%= button_to "OFF", {:action => "set_node_off", :controller => "node_status", :node_id => element} , :class => "btn btn-danger node-off" , :remote => true, :disabled => true %>
+                      
+                            <%= button_to "ON", {:action => "set_node_on", :controller => "node_status", :node_id => element}, :class => "btn btn-primary node-on", :remote => true, :disabled => true %>
+                          </div>
+
+                          <div class = "reset-status">
+                            <%= button_to "Reset", {:action => "reset_node", :controller => "node_status", :node_id => element}, :class => "btn btn-reset", :remote => true, :disabled => true %>
+                          </div>
+                        </div>
+                      <%end%> 
+                     
+                  <%end%>
+              </div>  
+              </div>
+            <%end%>        
+          <%end%>
+        </div>
+      </div><!-- End of panel-->
+    </section>
+  </div>
 </div>
 
 
+
 <div class = "row">
 
-  <div class = "col-lg-10">      
-        <% @node_list.each do |element|%>
-          
-            <%if @reserved_nodes.include?(element)%>            
-              <div id = "node_<%=element%>" class = "nodes">
-                <p><%=element%></p>
-                <p id = "node<%=element%>"></p>
-            
-                <div class = "on-off-status">
-                  <%= button_to "OFF", {:action => "set_node_off", :controller => "node_status", :node_id => element} ,:id =>"off_"+element , :remote => true, :disabled => false , :class => "btn btn-danger node-off"%>
-            
-                  <%= button_to "ON", {:action => "set_node_on", :controller => "node_status", :node_id => element},:id =>"on_"+element, :remote => true, :disabled => true, :class => "btn btn-primary node-on" %>
-                </div>
-
-                <div class = "reset-status">
-                  <%= button_to "Reset", {:action => "reset_node", :controller => "node_status", :node_id => element},:id =>"reset"+element, :class => "btn btn-reset", :remote => true, :disabled => true %>
-                </div>
-              </div>
-            <%else%>
-              <div class = "disabled_nodes">
-
-                <p><%=element%></p>
-                <p id = "node<%=element%>"></p>
-            
-                <div class = "on-off-status">
-                  <%= button_to "OFF", {:action => "set_node_off", :controller => "node_status", :node_id => element} , :class => "btn btn-danger node-off" , :remote => true, :disabled => true %>
-            
-                  <%= button_to "ON", {:action => "set_node_on", :controller => "node_status", :node_id => element}, :class => "btn btn-primary node-on", :remote => true, :disabled => true %>
-                </div>
-
-                <div class = "reset-status">
-                  <%= button_to "Reset", {:action => "reset_node", :controller => "node_status", :node_id => element}, :class => "btn btn-reset", :remote => true, :disabled => true %>
-                </div>
-              </div>
-            <%end%> 
-           
-        <%end%>
-  </div>
+  
 </div>
 
 <script>

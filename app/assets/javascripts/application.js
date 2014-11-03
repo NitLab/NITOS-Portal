@@ -35,7 +35,7 @@ channel.bind(temp, function(temp) {
     $("#off_"+node).prop('disabled', false);
     $("#reset"+node).prop('disabled', false);
   }else if(temp["response"] == "off"){
-  	$("#node_"+node).css("background", "black ");
+  	$("#node_"+node).css("background", "#e45b5b");
     $("#on_"+node).prop('disabled', false);
     $("#off_"+node).prop('disabled', true);
     $("#reset"+node).prop('disabled', true);

@@ -19,25 +19,28 @@ class SchedulerController < ApplicationController
   end
 
   def make_unbound_requests
-    puts params
+    # puts params
     
-    puts params[:number_of_nodes]
-    puts params[:number_of_channels]
-    puts params[:duration_t1]
-    puts params[:duration_t2]
-    puts params[:start_date]
-    puts params[:start_date_2]
-    puts params[:domain1]
-    puts params[:domain2]
+    # puts params[:number_of_nodes]
+    # puts params[:number_of_channels]
+    # puts params[:duration_t1]
+    # puts params[:duration_t2]
+    # puts params[:start_date]
+    # puts params[:start_date_2]
+    # puts params[:domain1]
 
     mapping_result = []
 
     if params[:number_of_nodes] == "" && params[:number_of_channels] == ""
-      flash[:danger] = "You must set number of nodes or channels tou make an unbound request!"
+      flash[:danger] = "You should set number of nodes or channels to make an unbound request!"
     else
-      mapping_result = unboundRequest(params)
-      puts "H sunarthsh mou epestrepse "
-      puts mapping_result
+      if params[:start_date] !="" && params[:start_date] < Time.zone.now.to_s
+        flash[:danger] = "Please select a time from now on."
+      else
+        mapping_result = unboundRequest(params)
+        puts "H sunarthsh mou epestrepse "
+        puts mapping_result
+      end   
     end
 
     redirect_to unbound_requests_path(mapping_result)
@@ -49,39 +52,67 @@ class SchedulerController < ApplicationController
     puts params[:user_slice]
     puts params[:reservations].inspect
 
+    params[:reservation]
+
     reservations = []
     params[:reservations].each do |element|
       reservations << eval(element) 
     end
 
-    array_with_reservations = []
-    reservations.each do |element|
+    old_timeslot = false
+    reservations.each do |reservation|
+      if reservation["valid_from"] <= Time.zone.now.to_s
+        old_timeslot = true
+        break
+      end
+    end
+      
+    if old_timeslot == true
+      redirect_to :back
+      flash[:danger] = "Your time is old. Please make a new request." 
+    else
+      array_with_reservations = []
+      reservations.each do |element|
 
-      h = Hash.new
-      h = {"valid_from" => element["valid_from"], "valid_until"=> element["valid_until"], "resources"=> [element["uuid"]] }
-      if array_with_reservations.length == 0
-        array_with_reservations << h
-      else
-        flag = 0
-        array_with_reservations.each do |reservation|
-          if reservation["valid_from"] == element["valid_from"] && reservation["valid_until"] == element["valid_until"] && !reservation["resources"].include?(element["uuid"])
-            reservation["resources"] << element["uuid"]
-            flag =1
-            break 
-          end                     
+        h = Hash.new
+        h = {"valid_from" => element["valid_from"], "valid_until"=> element["valid_until"], "resources"=> [element["uuid"]] }
+        if array_with_reservations.length == 0
+          array_with_reservations << h
+        else
+          flag = 0
+          array_with_reservations.each do |reservation|
+            if reservation["valid_from"] == element["valid_from"] && reservation["valid_until"] == element["valid_until"] && !reservation["resources"].include?(element["uuid"])
+              reservation["resources"] << element["uuid"]
+              flag =1
+              break 
+            end                     
+          end
+        end
+        if flag == 0
+          array_with_reservations << h
         end
       end
-      if flag == 0
-        array_with_reservations << h
+
+      puts array_with_reservations
+
+      results_of_reservations = []
+      array_with_reservations.each do |reservation|
+        results_of_reservations << reserveNode(reservation["resources"],params[:user_slice],reservation["valid_from"],reservation["valid_until"])
       end
-    end
 
-    puts array_with_reservations
-
-    array_with_reservations.each do |reservation|
-          reserveNode(reservation["resources"],params[:user_slice],reservation["valid_from"],reservation["valid_until"])
-    end
-    redirect_to unbound_requests_path
+      flash_msg = []
+      results_of_reservations.each do |result|
+        if !result.to_s.include?("HTTPOK")     
+          flash_msg << result.to_s       
+        end
+      end      
+      if flash_msg.length !=0
+        flash[:danger] = flash_msg
+      else
+        flash[:success] = "Successful reservation!"
+      end
+      redirect_to unbound_requests_path
+    end   
   end
 
   # Dhmiourgw ena hash pou exei san key ta slices tou user kai san values tou kathe key enan pinaka me krathseis gia to kathe slice
@@ -566,107 +597,7 @@ class SchedulerController < ApplicationController
       end
     end
 
-    #puts "Gia na doume ti kaname....Good luck"
-    #puts @reservation_table
   end
-
-  # def reservation
-    
-  #   columns = Array.new(48)
-  #   columns[0]= "Name"
-
-  #   (0..47).each do |n|
-  #     if (n % 2 == 0) 
-  #       columns[n+1] = "#{n<20 ? "0#{n / 2}" : n / 2}:00"
-  #     else
-  #       columns[n+1] =  "#{n<20 ? "0#{n / 2}" : n / 2}:30"
-  #     end
-  #   end
-
-  #   #puts columns.inspect
-
-    
-  #   node_obj = Nodes.new
-  #   @date = (Date.civil(params[:start_date][:year].to_i,params[:start_date][:month].to_i, params[:start_date][:day].to_i)).to_s
-  #   puts "H hmeromhnia einai " 
-  #   puts @date 
-  #   if @date == Date.today.to_s
-  #     puts "Geia sas "
-  #   end
-  #   @node_list = node_obj.get_node_list
-  #   @node_list_names = node_obj.get_node_list_names
-  #   #puts @node_list_uuids
-  #   @user_slices = getSlices()
-  #   #@leases = getLeases()
-  #   @today_leases = getLeasesByDate(@date)
-
-  #   num = @node_list_names.length
-
-  #   rows = Array.new(num){Array.new(49,0)}
-
-  #   $i=0
-
-  #   while $i< num do
-  #     rows[$i][0] = @node_list_names[$i]
-  #     $i +=1
-  #   end
-
-  #   #puts rows.inspect
-
-  #   @reservation_table = rows.map{|r| Hash[ *columns.zip(r).flatten ] }
-  #   #puts @reservation_table.inspect  
-  #   # puts @today_leases.inspect
-  #   puts @today_leases.inspect
-
-  #   @reservation_table.each do |iterate|
-  #     @today_leases.each do |t_lease|
-  #       date_from = t_lease["valid_from"].split('T')[0]
-  #       date_until = t_lease["valid_until"].split('T')[0]
-  #       time_form = t_lease["valid_from"].split('T')[1][0...-4]
-  #       time_until = t_lease["valid_until"].split('T')[1][0...-4]
-  #       puts date_from
-  #       puts date_until
-  #       puts time_form
-  #       puts time_until
-  #       puts @date
-
-
-  #       if iterate["Name"] == t_lease["components"][0]["component"]["name"]
-  #         if date_from == date_until
-  #           iterate.each_key do |key|
-  #             if key >= time_form && key < time_until && key != "Name" 
-  #               iterate[key] = 1
-  #             end
-  #           end
-  #         elsif date_from < date_until
-  #           if @date == date_from
-  #             iterate.each_key do |key|
-  #               if key >= time_form && key != "Name" 
-  #                 iterate[key] = 1
-  #               end
-  #             end
-  #           elsif @date == date_until
-  #             iterate.each_key do |key|
-  #               if key < time_until  
-  #                 iterate[key] = 1
-  #               end
-  #             end
-  #           else
-  #             iterate.each_key do |key|
-  #               if key != "Name"  
-  #                 iterate[key] = 1
-  #               end
-  #             end
-  #           end             
-  #         end
-          
-  #       end
-  #     end
-      
-  #   end
-  #   puts @reservation_table
-        
-  # end
 
   def make_reservation
     #Apo dw kai katw einai to palio resevation 
@@ -678,182 +609,227 @@ class SchedulerController < ApplicationController
     reservations = params[:reservations]
     puts "Autes einai oi krathseis pou thelw na kanw"
     puts reservations
+
+
     reservation_table = []
     if reservations == nil 
       redirect_to :back
       flash[:danger] = "You must select a timeslot to make a reservation. Please try again" 
     else
-      # puts "Autes einai oi krathseis pou thelw na kanw "
-      # puts reservations
-      #puts params[:user_slice]
-      
-      #Vriskw an exw panw apo 2 hmeromhnies gia krathseis kai krataw sto reservation_date th mikroterh
 
-      reservation_date_num = 0
-      reservation_date = ""
-      reservations.each do |reservation|
-        date = reservation.split('/')[1][0...-6]
-        if date != reservation_date
-          if date < reservation_date && reservation_date != ""
-            reservation_date = date
-            reservation_date_num +=1
-          elsif reservation_date == ""
-            reservation_date = date
-            reservation_date_num +=1
-          end
-          
+      #elegxos gia perissoteres apo 4 wres krathsh se ena request
+
+      hash_num_limition = Hash.new
+      reservations.each do |element|
+        hash_num_limition[element.split('/')[0]] = 0 
+      end
+
+      reservations.each do |element|
+        hash_num_limition[element.split('/')[0]] = hash_num_limition[element.split('/')[0]]+1
+      end
+
+      flag_limit = false
+      hash_num_limition.each_value do |value|
+        if value>4
+          flag_limit = true
+          break
         end
       end
 
-      reservations.each do |reservation|
-        if !ids.include?(reservation.split('/')[0])
-          ids << reservation.split('/')[0]
-        end
-      end
-
-      puts "reservation_date_num"
-      puts reservation_date_num
-
-      if reservation_date_num >= 2 || reservation_date == Time.zone.today.to_s
-
-        today = Time.zone.today.to_s
-        tomorrow = (Time.zone.today + 1.day).to_s
-        time_now =  Time.zone.now.to_s.split(" ")[1][0...-3]
-
-        #Upologismos gia sthles
-        columns = Array.new(48)
-        columns[0]= "Name"
-        (0..47).each do |n|
-          if (n % 2 == 0) 
-            columns[n+1] = "#{n<20 ? "0#{n / 2}" : n / 2}:00"
-          else
-            columns[n+1] =  "#{n<20 ? "0#{n / 2}" : n / 2}:30"
-          end
-        end
-
-        today_and_tommorow_columns = []
-        today_and_tommorow_columns << "Name"
-
-        columns.each do |element|
-          if element > time_now && element != "Name"
-            today_and_tommorow_columns << today + " " + element 
-          end
-        end
-
-        columns.each do |element|
-          if element <= time_now && element != "Name"        
-            today_and_tommorow_columns << tomorrow + " " + element
-          end
-        end
-
-        #Upologismos gia rows
-        rows = Array.new(ids.length){Array.new(49,0)}
-        rows.each_index do |i|
-          rows[i][0] = ids[i]
-        end
-
-        reservation_table = rows.map{|r| Hash[ *today_and_tommorow_columns.zip(r).flatten ] }
+      if flag_limit == true
+        redirect_to :back
+      flash[:danger] = "Please choose at most four timeslots for every resource" 
       else
-        ids.each_index do |i|
-          h = Hash.new
-          r_name = ids[i]
-          h["Name"] = r_name
-          (0..47).each do |n|
-            if (n % 2 == 0) 
-              h["#{reservation_date}#{n<20 ? " 0#{n / 2}" : " #{n / 2}"}:00"] = 0
-            else
-              h["#{reservation_date}#{n<20 ? " 0#{n / 2}" : " #{n / 2}"}:30"] =  0
-            end
-          end
-          h[reservation_date + " 23:59"] = 0
-          reservation_table << h
-        end
-      end
-        #Sumplhrwnw o kathe hash me tis krathseis 
-        reservation_table.each do |element|
-          reservations.each do |reservation|
-            if reservation.split('/')[0] == element["Name"]
-              element[reservation.split('/')[1]] =1
-            end
+        #elegxos gia an exw reservation apo ksexasmeno timeslot
+        old_timeslot = false
+        reservations.each do |reservation|
+          if reservation.split('/')[1] <= Time.zone.now.to_s[0...-9]
+            old_timeslot = true
+            break
           end
         end
-        puts ids
-
         
-        #Vriskw valid_fom kai valid_until gia kathe aithsh 
-        array_with_reservations = []
-        num = 0
-        valid_from = ""
-        valid_until = ""
-        puts "Auto einai to reservation table afou to gemisw"
-        puts reservation_table
-        reservation_table.each do |element|
-          element.each do |key,value|
-            #puts key
-            #puts value
-            if num ==0
-              if value ==1
-                #puts "mpika "
-                valid_from = key
-                #puts valid_from
-                num += 1
-              end
-            else 
-              if value ==0
-                valid_until = key
-                #stelnw krathsh 
-                #element["Name"]
+        if old_timeslot == true
+          redirect_to :back
+          flash[:danger] = "Please select a time from now on" 
+        else
 
-                valid_from = valid_from + ":00 " #+ Time.zone.now.to_s.split(' ')[2]
-                valid_from = Time.zone.parse(valid_from)
-                valid_until = valid_until + ":00 " #+ Time.zone.now.to_s.split(' ')[2]
-                valid_until = Time.zone.parse(valid_until)
-                #reserveNode(node_list_uuids[element["Name"]],params[:user_slice],valid_from,valid_until)
-                
-                h = Hash.new
-                h = {"valid_from" => valid_from, "valid_until"=> valid_until, "resources"=> [hash_details_of_resources[element["Name"]]["uuid"]] }
-                if array_with_reservations.length == 0
-                  array_with_reservations << h
+          #Vriskw an exw panw apo 2 hmeromhnies gia krathseis kai krataw sto reservation_date th mikroterh
+
+          reservation_date_num = 0
+          reservation_date = ""
+          reservations.each do |reservation|
+            date = reservation.split('/')[1][0...-6]
+            if date != reservation_date
+              if date < reservation_date && reservation_date != ""
+                reservation_date = date
+                reservation_date_num +=1
+              elsif reservation_date == ""
+                reservation_date = date
+                reservation_date_num +=1
+              end
+              
+            end
+          end
+
+          reservations.each do |reservation|
+            if !ids.include?(reservation.split('/')[0])
+              ids << reservation.split('/')[0]
+            end
+          end
+
+          puts "reservation_date_num"
+          puts reservation_date_num
+
+          if reservation_date_num >= 2 || reservation_date == Time.zone.today.to_s
+
+            today = Time.zone.today.to_s
+            tomorrow = (Time.zone.today + 1.day).to_s
+            time_now =  Time.zone.now.to_s.split(" ")[1][0...-3]
+
+            #Upologismos gia sthles
+            columns = Array.new(48)
+            columns[0]= "Name"
+            (0..47).each do |n|
+              if (n % 2 == 0) 
+                columns[n+1] = "#{n<20 ? "0#{n / 2}" : n / 2}:00"
+              else
+                columns[n+1] =  "#{n<20 ? "0#{n / 2}" : n / 2}:30"
+              end
+            end
+
+            today_and_tommorow_columns = []
+            today_and_tommorow_columns << "Name"
+
+            columns.each do |element|
+              if element > time_now && element != "Name"
+                today_and_tommorow_columns << today + " " + element 
+              end
+            end
+
+            columns.each do |element|
+              if element <= time_now && element != "Name"        
+                today_and_tommorow_columns << tomorrow + " " + element
+              end
+            end
+
+            #Upologismos gia rows
+            rows = Array.new(ids.length){Array.new(49,0)}
+            rows.each_index do |i|
+              rows[i][0] = ids[i]
+            end
+
+            reservation_table = rows.map{|r| Hash[ *today_and_tommorow_columns.zip(r).flatten ] }
+          else
+            ids.each_index do |i|
+              h = Hash.new
+              r_name = ids[i]
+              h["Name"] = r_name
+              (0..47).each do |n|
+                if (n % 2 == 0) 
+                  h["#{reservation_date}#{n<20 ? " 0#{n / 2}" : " #{n / 2}"}:00"] = 0
                 else
-                  flag = 0
-                  array_with_reservations.each do |reservation|
-                    if reservation["valid_from"] == valid_from && reservation["valid_until"] == valid_until && !reservation["resources"].include?(hash_details_of_resources[element["Name"]]["uuid"])
-                      reservation["resources"] << hash_details_of_resources[element["Name"]]["uuid"]
-                      flag =1
-                      break                      
-                    end
+                  h["#{reservation_date}#{n<20 ? " 0#{n / 2}" : " #{n / 2}"}:30"] =  0
+                end
+              end
+              h[reservation_date + " 23:59"] = 0
+              reservation_table << h
+            end
+          end
+            #Sumplhrwnw o kathe hash me tis krathseis 
+            reservation_table.each do |element|
+              reservations.each do |reservation|
+                if reservation.split('/')[0] == element["Name"]
+                  element[reservation.split('/')[1]] =1
+                end
+              end
+            end
+            puts ids
+
+            
+            #Vriskw valid_fom kai valid_until gia kathe aithsh 
+            array_with_reservations = []
+            num = 0
+            valid_from = ""
+            valid_until = ""
+            puts "Auto einai to reservation table afou to gemisw"
+            puts reservation_table.inspect
+            reservation_table.each do |element|
+              element.each do |key,value|
+                #puts key
+                #puts value
+                if num ==0
+                  if value ==1
+                    #puts "mpika "
+                    valid_from = key
+                    #puts valid_from
+                    num += 1
                   end
-                  if flag == 0
-                    array_with_reservations << h
+                else 
+                  if value ==0
+                    valid_until = key
+                    #stelnw krathsh 
+                    #element["Name"]
+
+                    valid_from = valid_from + ":00 " #+ Time.zone.now.to_s.split(' ')[2]
+                    valid_from = Time.zone.parse(valid_from)
+                    valid_until = valid_until + ":00 " #+ Time.zone.now.to_s.split(' ')[2]
+                    valid_until = Time.zone.parse(valid_until)
+                    #reserveNode(node_list_uuids[element["Name"]],params[:user_slice],valid_from,valid_until)
+                    
+                    h = Hash.new
+                    h = {"valid_from" => valid_from, "valid_until"=> valid_until, "resources"=> [hash_details_of_resources[element["Name"]]["uuid"]] }
+                    if array_with_reservations.length == 0
+                      array_with_reservations << h
+                    else
+                      flag = 0
+                      array_with_reservations.each do |reservation|
+                        if reservation["valid_from"] == valid_from && reservation["valid_until"] == valid_until && !reservation["resources"].include?(hash_details_of_resources[element["Name"]]["uuid"])
+                          reservation["resources"] << hash_details_of_resources[element["Name"]]["uuid"]
+                          flag =1
+                          break                      
+                        end
+                      end
+                      if flag == 0
+                        array_with_reservations << h
+                      end
+                    end
+                    puts "Tha kanw krathsh me valid_from"
+                    puts valid_from
+                    puts "kai valid_until"
+                    puts valid_until
+                    # puts "Gia ton "+element["Name"] + "me uuid=" + @node_list_uuids[element["Name"]]
+                    num = 0
                   end
                 end
-                puts "Tha kanw krathsh me valid_from"
-                puts valid_from
-                puts "kai valid_until"
-                puts valid_until
-                # puts "Gia ton "+element["Name"] + "me uuid=" + @node_list_uuids[element["Name"]]
-                num = 0
               end
             end
-          end
-        end
-        puts ""
-        puts "Auto einai to array me ta reservation pou prepei na ginoun"
-        puts array_with_reservations
+            puts ""
+            puts "Auto einai to array me ta reservation pou prepei na ginoun"
+            puts array_with_reservations
 
-        results_of_reservations = []
-        array_with_reservations.each do |reservation|
-          results_of_reservations << reserveNode(reservation["resources"],params[:user_slice],reservation["valid_from"],reservation["valid_until"])
+            results_of_reservations = []
+            array_with_reservations.each do |reservation|
+              results_of_reservations << reserveNode(reservation["resources"],params[:user_slice],reservation["valid_from"],reservation["valid_until"])
+            end
+            
+            flash_msg = []
+            results_of_reservations.each do |result|
+              if !result.to_s.include?("HTTPOK")     
+                flash_msg << result.to_s       
+              end
+            end      
+            if flash_msg.length !=0
+              flash[:danger] = flash_msg
+            else
+              flash[:success] = "Successful reservation!"
+            end
+            redirect_to :back 
         end
-        
-        flash_msg = []
-        results_of_reservations.each do |result|
-          if !result.to_s.include?("HTTPOK")     
-            flash_msg << result.to_s       
-          end
-        end      
-        flash[:danger] = flash_msg
-      redirect_to :back 
+
+      end
+
+      
     end 
   end
 

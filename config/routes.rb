@@ -8,6 +8,8 @@ Rails.application.routes.draw do
   match '/signout',               to: 'sessions#destroy',               via: 'delete'
   match '/news',                  to: 'static_pages#news',              via: 'get'
   match '/about',                 to: 'static_pages#about',             via: 'get'
+  match '/testbed_tools',         to: 'static_pages#testbed_tools',     via: 'get'
+  match '/contact',               to: 'static_pages#contact',           via: 'get'
   match '/node_status',           to: 'node_status#node_status',        via: 'get'
   match '/scheduler',             to: 'scheduler#scheduler',            via: 'get'
   match '/reservation',           to: 'scheduler#reservation',          via: 'get'

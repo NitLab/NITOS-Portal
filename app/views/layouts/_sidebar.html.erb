@@ -2,31 +2,33 @@
   <div id = "sidebar" class = "nav-collapse" style = "overflow: hidden;">
     <div class="list-group panel">
 
-      <a  href="/" class="list-group-item">
+      <a  href="/" class="list-group-item" onclick = "">
         <i class = "glyphicon glyphicon-home" > </i>
         <span>Home</span>
       </a>
 
-      <a href="#sub-experimentation-tools" class="list-group-item" data-toggle="collapse" data-parent="#sidebar">
+      <a href="/testbed_tools" class="list-group-item">
         <i class = "glyphicon glyphicon-search" > </i>       
         <span>Experimentation tools</span>
-        <i class="caret"></i>
       </a>
 
-      <div class="collapse " id="sub-experimentation-tools">
-
-        <a href="#scheduler-sub-menu" class="list-group-item" data-toggle="collapse" data-parent="#sub-experimentation-tools">
-          <i class = "glyphicon glyphicon-calendar" > </i>
-          <span>Scheduler</span>
-          <i class="caret"></i>
-        </a>
-        <div class="collapse list-group-submenu" id="scheduler-sub-menu">
-          <a href="/reservation" class="list-group-item" data-parent="#scheduler-sub-menu">Reservation</a>
-          <a href="/unbound_requests" class="list-group-item" data-parent="#scheduler-sub-menu">Quick Reservation</a>
-        </div>
-        <a href="/node_status" class="list-group-item">Node Status</a>
-        <a href="/my_reservations" class="list-group-item">My Reservations</a>
+      <a href="#scheduler-sub-menu" class="list-group-item" data-toggle="collapse" data-parent="#sub-experimentation-tools">
+        <i class = "glyphicon glyphicon-calendar" > </i>
+        <span>Scheduler</span>
+        <i class="caret"></i>
+      </a>
+      <div class="collapse list-group-submenu" id="scheduler-sub-menu">
+        <a href="/reservation" class="list-group-item" data-parent="#scheduler-sub-menu">Reservation</a>
+        <a href="/unbound_requests" class="list-group-item" data-parent="#scheduler-sub-menu">Quick Reservation</a>
       </div>
+      <a href="/node_status" class="list-group-item">
+        <i class = "glyphicon glyphicon-off" > </i>       
+        <span>Node Status</span>
+      </a>
+      <a href="/my_reservations" class="list-group-item">
+        <i class = "glyphicon glyphicon-list-alt" > </i>       
+        <span>My Reservations</span>
+      </a>
       
    </div> 
   </div>  

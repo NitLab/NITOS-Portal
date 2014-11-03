@@ -28,6 +28,26 @@ class NodeStatusController < ApplicationController
 
     time = Time.zone.now.to_s
     
+    @hash_reserved_nodes = Hash.new
+    
+    this_account_reservations.each do |key,value|
+      temp = []
+      @node_list.each do |node|       
+        value.each do |reservation|
+            reservation["components"].each do |element|
+              if element["component"]["name"].to_s.start_with?("node") && element["component"]["name"].to_s[-3,3] == node && reservation["valid_from"].to_s<= time && reservation["valid_until"].to_s > time
+                temp << node
+                break
+              end
+            end
+        end
+        
+      end
+      @hash_reserved_nodes[key] = temp
+    end
+
+    puts " @hash_reserved_nodes"
+    puts  @hash_reserved_nodes
 
     @reserved_nodes = []
     @node_list.each do |node|
