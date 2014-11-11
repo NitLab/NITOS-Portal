@@ -7,11 +7,14 @@ class NodeStatusController < ApplicationController
 
   def node_status
     node_obj = Nodes.new
+    # @node_list: a table with the numbers of nodes. ex: for node 
+    # node121 we add 121. Used in node status for turning ON/OFF/reset a node
     @node_list = node_obj.get_node_list
 
     @user_slices = []
     @user_slices = getSlices
 
+    # this_account_reservations: hash with slices of account as keys and leases of each slice as value
     this_account_reservations = Hash.new
     if @user_slices.length != 0    
       @user_slices.each do |slice|
@@ -28,6 +31,7 @@ class NodeStatusController < ApplicationController
 
     time = Time.zone.now.to_s
     
+    # @hash_reserved_nodes: hash with slices of account as keys and reserved node for this slice as value
     @hash_reserved_nodes = Hash.new
     
     this_account_reservations.each do |key,value|
@@ -66,6 +70,8 @@ class NodeStatusController < ApplicationController
     puts @reserved_nodes  
   end
 
+  # set_node_on: triggered when ON button clicked.
+  # we check if user has the right to make this action and if not we alert him a relative message
   def set_node_on
     node_id = params[:node_id]
     #puts node_id
@@ -80,6 +86,8 @@ class NodeStatusController < ApplicationController
     end
   end
 
+  # set_node_off: triggered when OFF button clicked.
+  # we check if user has the right to make this action and if not we alert him a relative message
   def set_node_off
     node_id = params[:node_id]
     puts node_id    
@@ -93,6 +101,8 @@ class NodeStatusController < ApplicationController
     end
   end
 
+  # reset_node: triggered when Reset button clicked.
+  # we check if user has the right to make this action and if not we alert him a relative message
   def reset_node
     node_id = params[:node_id]    
     if hasRightForNode?(node_id)

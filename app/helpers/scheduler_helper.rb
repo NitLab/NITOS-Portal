@@ -20,6 +20,7 @@ module SchedulerHelper
     return response = http.request(request) 
   end
 
+  # getAccounts: returns the accounts exist in broker
   def getAccounts
     broker_url = APP_CONFIG['broker_ip'] + ':' + APP_CONFIG['broker_port'].to_s
     http = broker_url + "/resources/accounts"
@@ -27,13 +28,14 @@ module SchedulerHelper
     return res
   end
 
+  # getLeases: returns all the leases according user's timezone
   def getLeases
     broker_url = APP_CONFIG['broker_ip'] + ':' + APP_CONFIG['broker_port'].to_s
     result = HTTParty.get(broker_url + "/resources/leases", :verify => false)
     temp = JSON.parse(result.body)
     leases = []
-    # puts "Test"
-    # puts temp
+    puts "Test"
+    puts temp
     if ! temp.has_key?("exception")
       temp["resource_response"]["resources"].each do |lease|
         #puts "Allagh wras sta leases sumfwna me to timezone tou xrhshth"
@@ -51,6 +53,7 @@ module SchedulerHelper
     return leases
   end
 
+  # getLeasesByDate: returns the leases for a given date 
   def getLeasesByDate(date)
     leases = getLeases()
     today_leases = []
@@ -72,6 +75,7 @@ module SchedulerHelper
     return today_leases
   end
 
+  # getLeasesBySlice: returns the leases for a given slice,from this moment and on 
   def getLeasesBySlice(slice)
     leases = getLeases()
     this_slice_leases = []
@@ -91,6 +95,7 @@ module SchedulerHelper
     return this_slice_leases
   end
 
+  # getLeasesByAccount: returns the leases for a given account 
   def getLeasesByAccount
     #puts "Eimai mesa sthn getLeasesByAccount"
     this_account_slices = []
@@ -114,6 +119,7 @@ module SchedulerHelper
     return this_account_reservations
   end
 
+  # getSlices: returns the slices of the user(current_user) that is loged in
   def getSlices
     broker_url = APP_CONFIG['broker_ip'] + ':' + APP_CONFIG['broker_port'].to_s
     result = HTTParty.get(broker_url + "/resources/users?name="+current_user.name, :verify => false)
@@ -138,10 +144,15 @@ module SchedulerHelper
     return user_slices
   end
 
+  # reserveNode: is responsible for constructing the request to reserve a resource 
+  # parameters: 1) node_ids: a table with the uuids of the resources that we want to reserve
+  #             2) account_name: the given slice we use for reservation
+  #             3) valid_from: the start time for reservation
+  #             4) valid_until: the end time of reservation
   def reserveNode(node_ids,account_name,valid_from,valid_until)
     cert_path = APP_CONFIG['cert_path']
+    # resernation_name: we set a random name for every reservation constructing by the name of the slice and a random number ex user1/12341234 
     resernation_name =account_name+ "/" + (1000 + Random.rand(10000000)).to_s
-    #puts "namaasdfasd fasdfasdfaskjhdfkjasdhf asdfjh"
     puts resernation_name
     
     broker_url = APP_CONFIG['broker_ip'] + ':' + APP_CONFIG['broker_port'].to_s
@@ -173,27 +184,30 @@ module SchedulerHelper
     request.body = options.to_json
 
     response = http.request(request)
-    puts response
+    
+    res = JSON.parse(response.body)
+    
     if response.header.code != '200'
       puts "Something went wrong"
-      puts response
+      puts response 
+      puts res["exception"]["reason"]
+      return res["exception"]["reason"]
+    else
+      return "OK"
     end
-    return response
+    
   end
 
+  # unboundRequest: respnsoble for constructing the request for making an unbound request 
   def unboundRequest(params)
     broker_url = APP_CONFIG['broker_ip'] + ':' + APP_CONFIG['broker_port'].to_s
 
-    # dokimh1
     resources = []
 
     h1 = Hash.new
     h2 = Hash.new
 
-    
-
-    puts "Gia na doume tous xronous"
-    puts Time.zone.now
+    # puts Time.zone.now
 
     if params[:start_date] != ""
       valid_from = params[:start_date] + ":00 "
@@ -205,10 +219,7 @@ module SchedulerHelper
       valid_from = Time.zone.parse(valid_from)
     end
 
-    puts "valid_from"
-    puts valid_from
-
-    #Gia nodes
+    #For nodes
     if params[:number_of_nodes] != ""
       if params[:duration_t1] != ""
         if params[:domain1] != ""
@@ -226,13 +237,9 @@ module SchedulerHelper
 
       params[:number_of_nodes].to_i.times {resources << h1}
 
-      puts "Tsekarisma "
-      puts params[:number_of_nodes]
-      puts h1
-      puts resources
     end
 
-    #Gia channels
+    #For channels
     if params[:number_of_channels] != ""
       if params[:duration_t1] != ""
         if params[:domain1] != ""
@@ -274,6 +281,7 @@ module SchedulerHelper
     end
   end
 
+  # roundTimeUp: used in unboundRequest for converting the time to the next half hour 
   def roundTimeUp(time)
     if time.split(':')[1] >= "30"
       if time.split(':')[0] != "23"
@@ -288,6 +296,9 @@ module SchedulerHelper
     return time
   end 
 
+  # roundTimeFrom: used for rounding time 
+  # used in scheduler for showing reservation with start time between :00-:30
+  # ex if valid_from = 13:15 we convert it to 13:00
   def roundTimeFrom(time)
     if time.split(':')[1] >= "30"
       time = time.split(':')[0] + ":30"
@@ -296,6 +307,10 @@ module SchedulerHelper
     end
   end
 
+  # roundTimeUntil: used for rounding time 
+  # used in scheduler for showing reservation with end time between :00-:30
+  # ex if valid_until = 13:15 we convert it to 13:30
+  # ex if valid_until = 13:45 we convert it to 14:00
   def roundTimeUntil(time)
     if time.split(':')[1] != "00" && time.split(':')[1] != "30"
       if time.split(':')[1] >= "30"
@@ -312,6 +327,7 @@ module SchedulerHelper
     return time
   end
 
+  # cancelReservation: responsible for canceling a reservation. cancels the reservation with the passed uuid 
   def cancelReservation(lease_uuid)
     broker_url = APP_CONFIG['broker_ip'] + ':' + APP_CONFIG['broker_port'].to_s    
     cert_path = APP_CONFIG['cert_path']
@@ -339,11 +355,13 @@ module SchedulerHelper
     end
   end
 
+  # set_timezone: we set the user's timezone according to the timezone passed throw the cookie
+  # if something goes wrong we set timezone to the default timezone
   def set_timezone
     default_timezone = Time.zone
     client_timezone  = cookies[:timezone]
-    puts "Na to to coooookie"
-    puts client_timezone
+    # puts "Na to to coooookie"
+    # puts client_timezone
     Time.zone = client_timezone if client_timezone.present?
     yield
   ensure

@@ -18,9 +18,6 @@
     
 	</head>
 	<body>
-		<!-- <div class="loader">
-      <img src="/images/page-loader.gif">
-    </div> -->
 			<%= render 'layouts/header' %>
 			
 			<% flash.each do |key, value| %>
@@ -51,19 +48,13 @@
 	</body>
 
   
-
+<!--Script that detects user's timezone and passing to controller throw cookies -->
 <script>
 	jQuery(function() {
   	
   	var tz = jstz.determine();
   	$.cookie('timezone', tz.name(), { path: '/' });
 	});
-</script>
-
-<script type="text/javascript">
-// $(window).load(function() {
-//   $(".loader").fadeOut("slow");
-// })
 </script>
 
 </html>

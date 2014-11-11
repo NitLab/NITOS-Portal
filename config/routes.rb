@@ -11,7 +11,6 @@ Rails.application.routes.draw do
   match '/testbed_tools',         to: 'static_pages#testbed_tools',     via: 'get'
   match '/contact',               to: 'static_pages#contact',           via: 'get'
   match '/node_status',           to: 'node_status#node_status',        via: 'get'
-  match '/scheduler',             to: 'scheduler#scheduler',            via: 'get'
   match '/reservation',           to: 'scheduler#reservation',          via: 'get'
   match '/my_reservations',       to: 'scheduler#my_reservations',      via: 'get'
   match '/unbound_requests',      to: 'scheduler#unbound_requests',     via: 'get'

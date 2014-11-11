@@ -759,8 +759,9 @@ a, a:hover, a:focus {
   }
 }
 .about-list{
-  width: 65%;
+  width: 61%;
   margin-left: 22%;
+  text-align:  justify;
 }
 
 .about-list ul li{
@@ -775,12 +776,14 @@ a, a:hover, a:focus {
 #about-page p{
   margin-left: 26%;
   margin-top: 2%;
-  width: 51%;
+  width: 60%;
 }
 
 .panel-body h2{
   border-top: ;
   border-bottom: ;
+  margin-left: 4%;
+
 }
 
 .about a{

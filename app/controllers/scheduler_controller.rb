@@ -4,6 +4,7 @@ class SchedulerController < ApplicationController
   around_filter :set_timezone 
   #require "momentjs-rails"
 
+
   def unbound_requests
     
     node_obj = Nodes.new
@@ -18,16 +19,12 @@ class SchedulerController < ApplicationController
     
   end
 
+  # make_unbound_requests: called when find resources button clicked
+  # responsible for making controls about required fields and invalid time.
+  # responsible for calling unboundRequest with the relative parameters
+
   def make_unbound_requests
     # puts params
-    
-    # puts params[:number_of_nodes]
-    # puts params[:number_of_channels]
-    # puts params[:duration_t1]
-    # puts params[:duration_t2]
-    # puts params[:start_date]
-    # puts params[:start_date_2]
-    # puts params[:domain1]
 
     mapping_result = []
 
@@ -35,7 +32,7 @@ class SchedulerController < ApplicationController
       flash[:danger] = "You should set number of nodes or channels to make an unbound request!"
     else
       if params[:start_date] !="" && params[:start_date] < Time.zone.now.to_s
-        flash[:danger] = "Please select a time from now on."
+        flash[:danger] = "Please select a timeslot in the future."
       else
         mapping_result = unboundRequest(params)
         puts "H sunarthsh mou epestrepse "
@@ -47,6 +44,9 @@ class SchedulerController < ApplicationController
   end
 
 
+  # confirm_reservations: responsible for making reservation related to the unbound requests
+  # Checks if there is a forgotten timeslot and returns relative message
+  # If everything is OK, calls reserveNode with the appropriate parameters 
   def confirm_reservations
     puts "Auta einai ta params"
     puts params[:user_slice]
@@ -102,7 +102,7 @@ class SchedulerController < ApplicationController
 
       flash_msg = []
       results_of_reservations.each do |result|
-        if !result.to_s.include?("HTTPOK")     
+        if !result.to_s.include?("OK")     
           flash_msg << result.to_s       
         end
       end      
@@ -115,7 +115,8 @@ class SchedulerController < ApplicationController
     end   
   end
 
-  # Dhmiourgw ena hash pou exei san key ta slices tou user kai san values tou kathe key enan pinaka me krathseis gia to kathe slice
+  
+  # my_reservations: creates a hash with keys the user's slices and values an array with the reservations of every slice 
   def my_reservations
     @slices = []
     @slices = getSlices
@@ -134,6 +135,7 @@ class SchedulerController < ApplicationController
     end
   end
 
+  # cancel_reservation: responsible for canceling a reservation by calling cancelReservation
   def cancel_reservation
     lease_uuid = params[:lease_uuid]
     puts lease_uuid
@@ -141,61 +143,19 @@ class SchedulerController < ApplicationController
     redirect_to my_reservations_path
   end
 
-  def scheduler 
-    puts "Sxetika me tis wres"
-    puts "Time.zone.now"
-    puts Time.zone.now
-    puts "Time.now"
-    puts Time.now
-    puts "2.hours.ago"
-    puts 2.hours.ago
-    puts "1.day.from_now"
-    puts 1.day.from_now
-    puts "Date.today"
-    puts Date.today
-    puts "Time.zone.today"
-    puts Time.zone.today
-    puts "Time.zone.today - 1.day"
-    puts Time.zone.today - 1.day
-    # puts "Date.today.to_time_in_current_zone"
-    # puts Date.today.to_time_in_current_zone
-    puts "Date.current"
-    puts Date.current
-    puts "Time.zone.today"
-    puts Time.zone.today
-    
 
-    if params[:start_date] != nil
-      puts params[:start_date]
-    end
-
-    example = []
-    example = getLeasesByAccount
-
-    @slices = []
-    @slices = getSlices
-
-    # reserveNode(["77879ad1-b6ee-419c-ae70-05c19f4ea745"],"ardadouk","2014-09-30 15:15:00 +0000","2014-09-30 19:15:00 +0000")
-    # reserveNode(["77879ad1-b6ee-419c-ae70-05c19f4ea745"],"ardadouk","2014-09-30 20:00:00 +0000","2014-09-30 22:30:00 +0000")
-    # reserveNode(["a1d43ca1-8798-4564-8a63-37dd95a15ded"],"ardadouk","2014-09-30 20:45:00 +0000","2014-09-30 22:45:00 +0000")
-  end
-
+  # reservation is responsible for showing the scheduler to users.   
   def reservation 
 
-    puts "Testing times"
+    # check if user pass a date. if user select a date we present him/her the schedule according to this date
+    # else we show the schedule of current date.
+    # @date: variable that contains the given date or the current according to user's timezone
 
     if params[:start_date] == "" || params[:start_date] == nil
       @date = Time.zone.today.to_s
     else
       @date = params[:start_date].split(" ")[0]
-      # puts "date_to_utc"
-      # date_to_utc = Time.zone.parse(params[:start_date]).utc.to_s.split(' ')[0]
-      # puts date_to_utc 
     end
-    puts "@date"
-    puts @date
-    puts "params[:start_date]"
-    puts params[:start_date]
 
     node_obj = Nodes.new
     @resources_list_names = node_obj.get_resources_list_names
@@ -203,6 +163,7 @@ class SchedulerController < ApplicationController
     @user_slices = getSlices()
     @details_of_resources = node_obj.get_details_of_resources
 
+    # columns: array with the times of a day. from 00:00 until 23:30. step = :30
     columns = Array.new(48)
     columns[0]= "Name"
     (0..47).each do |n|
@@ -214,6 +175,7 @@ class SchedulerController < ApplicationController
     end
 
     num = @resources_list_names.length
+    # rows: a two dimension array filled with zero, except from the first column that is filled with the names of the resources
     rows = Array.new(num){Array.new(49,0)}
 
     $i=0
@@ -223,22 +185,15 @@ class SchedulerController < ApplicationController
       $i +=1
     end
 
-    
+    # We have two cases.
+    # if @date == Time.zone.today.to_s we shows the schedule of the next 24hours
+    # else we shows the schedule for the selected date by the user
     if @date == Time.zone.today.to_s
-      #Emfanise pinaka gia tis epomenes 24 wres
+      
       time_now =  Time.zone.now.to_s.split(" ")[1][0...-3]
       @tomorrow = (Time.zone.today + 1.day).to_s
       
-      #Metavlhtes pou tis xrhsimopoiw otan kanw request gia ta leases 
-      today_in_utc = Time.zone.now.utc.iso8601.split('T')[0]
-      tomorrow_in_utc = 1.day.from_now.utc.iso8601.split('T')[0]
-
-      # puts "today and tomorrow to utc"
-      # puts today_in_utc
-      # puts tomorrow_in_utc
-      # puts time_now
-      # puts @tomorrow
-
+      # today_and_tommorow_columns: table with first element the string "Name" and the rest elements are all times from the next half hour
       today_and_tommorow_columns = []
       today_and_tommorow_columns << "Name"
       columns.each do |element|
@@ -253,33 +208,27 @@ class SchedulerController < ApplicationController
         end
       end
 
-      @reservation_table = rows.map{|r| Hash[ *today_and_tommorow_columns.zip(r).flatten ] }
-      
-      # @today_leases = getLeasesByDate(today_in_utc)
-      # @tomorrow_leases = getLeasesByDate(tomorrow_in_utc)
+      # @reservation_table: a table with hashes.
+      # every element is a hash with the Name of the resource and the reserved timeslots
+      # ex {"Name"=>"node016", "2014-11-11 21:00"=>0, "2014-11-11 21:30"=>0, "2014-11-11 22:00"=>0, "2014-11-11 22:30"=>0, 
+      # "2014-11-11 23:00"=>0, "2014-11-11 23:30"=>0, "2014-11-12 00:00"=>0, "2014-11-12 00:30"=>0, "2014-11-12 01:00"=>0, "2014-11-12 01:30"=>0,
+      #  "2014-11-12 02:00"=>0, "2014-11-12 02:30"=>1, "2014-11-12 03:00"=>0, "2014-11-12 03:30"=>0, "2014-11-12 04:00"=>0, "2014-11-12 04:30"=>0,
+      #   "2014-11-12 05:00"=>0, "2014-11-12 05:30"=>0, "2014-11-12 06:00"=>0, "2014-11-12 06:30"=>0, "2014-11-12 07:00"=>0, "2014-11-12 07:30"=>0, 
+      #   "2014-11-12 08:00"=>0, "2014-11-12 08:30"=>0, "2014-11-12 09:00"=>0, "2014-11-12 09:30"=>0, "2014-11-12 10:00"=>0, "2014-11-12 10:30"=>0,
+      #    "2014-11-12 11:00"=>0, "2014-11-12 11:30"=>0, "2014-11-12 12:00"=>0, "2014-11-12 12:30"=>0, "2014-11-12 13:00"=>0, "2014-11-12 13:30"=>0, 
+      #    "2014-11-12 14:00"=>0, "2014-11-12 14:30"=>0, "2014-11-12 15:00"=>0, "2014-11-12 15:30"=>0, "2014-11-12 16:00"=>0, "2014-11-12 16:30"=>0, 
+      #    "2014-11-12 17:00"=>0, "2014-11-12 17:30"=>0, "2014-11-12 18:00"=>0, "2014-11-12 18:30"=>0, "2014-11-12 19:00"=>0, "2014-11-12 19:30"=>0, 
+      #    "2014-11-12 20:00"=>0, "2014-11-12 20:30"=>0}
+      # if there is a reservation for a specifiv timeslot we set the relative timeslot with 1 otherwise we have 0 (default value)
+
+      @reservation_table = rows.map{|r| Hash[ *today_and_tommorow_columns.zip(r).flatten ] }     
 
       @today_leases = getLeasesByDate(Time.zone.today.to_s)
       @tomorrow_leases = getLeasesByDate(@tomorrow)
-
-      puts "Auta m epistrefei to getLeasesByDate(today_in_utc)"
-      puts @today_leases
-      puts "Auta m epistrefei to getLeasesByDate(tomorrow_in_utc)"
-      puts @tomorrow_leases
       
 
-      # puts "Auta einai ta today leases"
-      # puts @today_leases
-      # puts "Auta einai ta tomorrow leases"
-      # puts @tomorrow_leases
-
-      # puts "today leases"
-      # puts @today_leases
-      # puts "tomorrow leases"
-      # puts @tomorrow_leases
-
-      # puts @reservation_table
-
       @reservation_table.each do |iterate|
+        # filling 1 to @reservation_table for the reserved resources for the "today" date 
         @today_leases.each do |today_lease|
 
           date_from = today_lease["valid_from"].split(' ')[0]
@@ -287,32 +236,11 @@ class SchedulerController < ApplicationController
           time_from = today_lease["valid_from"].split(' ')[1][0...-3]
           time_until = today_lease["valid_until"].split(' ')[1][0...-3]
           
-          # puts "auta eunau ta dedomena mou prin"
-          # puts date_from
-          # puts date_until
-          # puts time_from
-          # puts time_until
-
-          # date_from = Time.strptime(today_lease["valid_from"], '%Y-%m-%dT%H:%M:%S%z').in_time_zone(Time.zone).to_s.split(' ')[0]
-          # date_until = Time.strptime(today_lease["valid_until"], '%Y-%m-%dT%H:%M:%S%z').in_time_zone(Time.zone).to_s.split(' ')[0]
-          # time_from = Time.strptime(today_lease["valid_from"], '%Y-%m-%dT%H:%M:%S%z').in_time_zone(Time.zone).to_s.split(' ')[1][0...-3]
-          # time_until = Time.strptime(today_lease["valid_until"], '%Y-%m-%dT%H:%M:%S%z').in_time_zone(Time.zone).to_s.split(' ')[1][0...-3]
-          
-
-          
-
-          # puts "PROSOXH !!!"
-          # puts "auta eunau ta dedomena mou meta"
-          # puts date_from
-          # puts date_until
-          # puts time_from
-          # puts time_until
-          # puts @date
-
+          # use roundTimeFrom and roundTimeUntil for times between :00-:30 such as :15 (for minutes)
           time_from = roundTimeFrom(time_from)
           time_until = roundTimeUntil(time_until)
 
-          #Auto me to prev einai proswrinh lush gia na apofeugw ta diplwtupa 
+          #Auto me to prev einai  gia na apofeugw ta diplwtupa (den einai aparaithto)
           prev_component = ""
           today_lease["components"].each do |component|
             #puts (@date + " " + component["component"]["name"]).to_s
@@ -396,8 +324,8 @@ class SchedulerController < ApplicationController
       end
       #puts @reservation_table
       @reservation_table.each do |iterate|
-        #puts @tommorrow_leases
-        #Edw prepei na kanw gia to tomorrow 
+        # filling 1 to @reservation_table for the reserved resources for the "tommorow" date 
+        
         #Se auth thn periptwsh skeftomai to <= tou time_now san to orio tou programmatos 
         #pou tha emfanisw sto xrhsh 
         @tomorrow_leases.each do |tomorrow_lease|
@@ -408,32 +336,13 @@ class SchedulerController < ApplicationController
           time_until = tomorrow_lease["valid_until"].split(' ')[1][0...-3]
 
 
-          # puts "auta eunau ta dedomena mou gia to tommorrow ptin"
-          # puts date_from
-          # puts date_until
-          # puts time_from
-          # puts time_until
-
-          # date_from = Time.strptime(tomorrow_lease["valid_from"], '%Y-%m-%dT%H:%M:%S%z').in_time_zone(Time.zone).to_s.split(' ')[0]
-          # date_until = Time.strptime(tomorrow_lease["valid_until"], '%Y-%m-%dT%H:%M:%S%z').in_time_zone(Time.zone).to_s.split(' ')[0]
-          # time_from = Time.strptime(tomorrow_lease["valid_from"], '%Y-%m-%dT%H:%M:%S%z').in_time_zone(Time.zone).to_s.split(' ')[1][0...-3]
-          # time_until = Time.strptime(tomorrow_lease["valid_until"], '%Y-%m-%dT%H:%M:%S%z').in_time_zone(Time.zone).to_s.split(' ')[1][0...-3]
-
-
-          # puts "auta eunau ta dedomena mou gia to tommorrow meta"
-          # puts date_from
-          # puts date_until
-          # puts time_from
-          # puts time_until
-          # puts @date
-
           time_from = roundTimeFrom(time_from)
           time_until = roundTimeUntil(time_until)
 
           #Auto me to prev einai proswrinh lush gia na apofeugw ta diplwtupa 
           prev_component = ""
           tomorrow_lease["components"].each do |component|
-            if component["component"]["name"] != prev_component && iterate["Name"] == component["component"]["name"]
+            if component["component"]["name"] != prev_component && iterate["Name"] == component["component"]["name"]              
               if date_from == date_until
                 if time_from < time_now && time_until <= time_now
                   iterate.each_key do |key|
@@ -505,6 +414,7 @@ class SchedulerController < ApplicationController
       end
       puts @reservation_table
     else
+      # Same way as above but only for the given date
       @today_leases = getLeasesByDate(@date)
 
       today_columns = []
@@ -523,28 +433,16 @@ class SchedulerController < ApplicationController
       @reservation_table.each do |iterate|
         @today_leases.each do |t_lease|
 
-          # date_from = Time.strptime(t_lease["valid_from"], '%Y-%m-%dT%H:%M:%S%z').in_time_zone(Time.zone).to_s.split(' ')[0]
-          # date_until = Time.strptime(t_lease["valid_until"], '%Y-%m-%dT%H:%M:%S%z').in_time_zone(Time.zone).to_s.split(' ')[0]
-          # time_from = Time.strptime(t_lease["valid_from"], '%Y-%m-%dT%H:%M:%S%z').in_time_zone(Time.zone).to_s.split(' ')[1][0...-3]
-          # time_until = Time.strptime(t_lease["valid_until"], '%Y-%m-%dT%H:%M:%S%z').in_time_zone(Time.zone).to_s.split(' ')[1][0...-3]
 
           date_from = t_lease["valid_from"].split(' ')[0]
           date_until = t_lease["valid_until"].split(' ')[0]
           time_from = t_lease["valid_from"].split(' ')[1][0...-3]
           time_until = t_lease["valid_until"].split(' ')[1][0...-3]
 
-          # puts date_from
-          # puts date_until
-          # puts time_from
-          # puts time_until
-          # puts @date
+
 
           time_from = roundTimeFrom(time_from)
           time_until = roundTimeUntil(time_until)
-
-          puts "Ta stroggulopoihmena times einai"
-          puts time_from
-          puts time_until
 
           prev_component = ""
           t_lease["components"].each do |component|
@@ -599,25 +497,27 @@ class SchedulerController < ApplicationController
 
   end
 
+  # responsible for making reservations
   def make_reservation
-    #Apo dw kai katw einai to palio resevation 
+    
     node_obj = Nodes.new
     hash_details_of_resources = node_obj.get_details_of_resources
-    # Vriskw poioi komvoi einai pros krathsh 
+    
+    # finds which resources are for reservation
     ids = []
     reservations = []
     reservations = params[:reservations]
-    puts "Autes einai oi krathseis pou thelw na kanw"
-    puts reservations
+    # puts "Autes einai oi krathseis pou thelw na kanw"
+    # puts reservations
 
-
+    # control for empty request for reservation
     reservation_table = []
     if reservations == nil 
       redirect_to :back
       flash[:danger] = "You must select a timeslot to make a reservation. Please try again" 
     else
 
-      #elegxos gia perissoteres apo 4 wres krathsh se ena request
+      #control for up to 8 timeslots reservation 
 
       hash_num_limition = Hash.new
       reservations.each do |element|
@@ -630,7 +530,7 @@ class SchedulerController < ApplicationController
 
       flag_limit = false
       hash_num_limition.each_value do |value|
-        if value>4
+        if value>8
           flag_limit = true
           break
         end
@@ -638,9 +538,9 @@ class SchedulerController < ApplicationController
 
       if flag_limit == true
         redirect_to :back
-      flash[:danger] = "Please choose at most four timeslots for every resource" 
+      flash[:danger] = "Please choose at most 8 timeslots for every resource." 
       else
-        #elegxos gia an exw reservation apo ksexasmeno timeslot
+        #control for forgotten timeslots 
         old_timeslot = false
         reservations.each do |reservation|
           if reservation.split('/')[1] <= Time.zone.now.to_s[0...-9]
@@ -654,8 +554,8 @@ class SchedulerController < ApplicationController
           flash[:danger] = "Please select a time from now on" 
         else
 
-          #Vriskw an exw panw apo 2 hmeromhnies gia krathseis kai krataw sto reservation_date th mikroterh
-
+          
+          # Checks if there is two different dates of reservations (case of 24hours schedule) and keeps the shorter
           reservation_date_num = 0
           reservation_date = ""
           reservations.each do |reservation|
@@ -681,6 +581,7 @@ class SchedulerController < ApplicationController
           puts "reservation_date_num"
           puts reservation_date_num
 
+          # constructs a table with the reservations. 1 for selected timeslot and 0 for non-selected
           if reservation_date_num >= 2 || reservation_date == Time.zone.today.to_s
 
             today = Time.zone.today.to_s
@@ -732,6 +633,7 @@ class SchedulerController < ApplicationController
                   h["#{reservation_date}#{n<20 ? " 0#{n / 2}" : " #{n / 2}"}:30"] =  0
                 end
               end
+              #if the last half hour of a day selected, we reserve a node until "23:59" 
               h[reservation_date + " 23:59"] = 0
               reservation_table << h
             end
@@ -747,9 +649,10 @@ class SchedulerController < ApplicationController
             puts ids
 
             
-            #Vriskw valid_fom kai valid_until gia kathe aithsh 
+            # array_with_reservations: table filled with hashes of the reservations to be done 
             array_with_reservations = []
             num = 0
+            #Compute valid_from and valid_until for each reservation request 
             valid_from = ""
             valid_until = ""
             puts "Auto einai to reservation table afou to gemisw"
@@ -808,6 +711,7 @@ class SchedulerController < ApplicationController
             puts "Auto einai to array me ta reservation pou prepei na ginoun"
             puts array_with_reservations
 
+            # Making reservations
             results_of_reservations = []
             array_with_reservations.each do |reservation|
               results_of_reservations << reserveNode(reservation["resources"],params[:user_slice],reservation["valid_from"],reservation["valid_until"])
@@ -815,7 +719,7 @@ class SchedulerController < ApplicationController
             
             flash_msg = []
             results_of_reservations.each do |result|
-              if !result.to_s.include?("HTTPOK")     
+              if !result.to_s.include?("OK")     
                 flash_msg << result.to_s       
               end
             end      

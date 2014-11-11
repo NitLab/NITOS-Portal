@@ -3,6 +3,7 @@ module NodeStatusHelper
   require "httparty"
   require "json"
 
+  # getNodeList: returns the list of nodes
   def getNodeList
     broker_url = APP_CONFIG['broker_ip'] + ':' + APP_CONFIG['broker_port'].to_s
     result = HTTParty.get(broker_url + "/resources/nodes", :verify => false)
@@ -13,6 +14,7 @@ module NodeStatusHelper
       
   end
 
+  # getChannelsList: returns the list of channels
   def getChannelsList
     broker_url = APP_CONFIG['broker_ip'] + ':' + APP_CONFIG['broker_port'].to_s
     result = HTTParty.get(broker_url + "/resources/channels", :verify => false)
@@ -23,14 +25,17 @@ module NodeStatusHelper
       
   end
 
+  # getNodeStatus: returns the status of node_id
   def getNodeStatus(node_id)         
      cm_url = APP_CONFIG['cm_ip'] + ':' + APP_CONFIG['cm_port'].to_s
      res = HTTParty.get(cm_url+"/resources/node/"+ node_id)
-
+     # puts "status "+node_id
+     # puts res
      return res
 
   end
 
+  # setNodeON: sets node_id node ON
   def setNodeON(node_id)
     cm_url = APP_CONFIG['cm_ip'] + ':' + APP_CONFIG['cm_port'].to_s
 
@@ -39,6 +44,7 @@ module NodeStatusHelper
       
   end
 
+  # setNodeOFF: sets node_id node OFF
   def setNodeOFF(node_id)   
     cm_url = APP_CONFIG['cm_ip'] + ':' + APP_CONFIG['cm_port'].to_s
 
@@ -47,6 +53,7 @@ module NodeStatusHelper
       
   end
 
+  # resetNode: resets node_id
   def resetNode(node_id)    
     cm_url = APP_CONFIG['cm_ip'] + ':' + APP_CONFIG['cm_port'].to_s
 
@@ -55,6 +62,7 @@ module NodeStatusHelper
       
   end
 
+  # hasRightForNode: check if a users has the right to turn a node ON/OFF or reset a node, according to the current-active user's accound leases
   def hasRightForNode?(node_id)
     puts "hasRightForNode"
     hash = Hash.new

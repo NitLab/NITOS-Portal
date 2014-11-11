@@ -1,28 +1,10 @@
-== README
+Welcome to NITOS Portal.
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Here you can find the implementation of the Experimental Portal for the NITOS research facility.
 
-Things you may want to cover:
+We deals with the designation of the Data Base and the Registration - Sign in/out mechanism that gives the opportunity to the experimenter, to create a new account and start using the experimentation tools.
 
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+We also constucts the Scheduler tool gives the opportunity to the experimenter to discover the available resources (nodes, channels) for a given date, reserve a resource, and discover the main characteristics of every resource. In addition, we introduce the Quick Reservation tool, an easy way for reserving resources. In My Reservations tool, the user can observe his/her reservation and cancel a reservation. The Node Status tool is responsible for showing the status of every node reserved by a user. Moreover, a user can change the status of a node, by turning it ON/OFF or by Reseting it. Another feature of the NITOS Portal is that it automatically detects the user time zone and displays all information accordingly.
 
 
-Please feel free to use a different markup language if you do not plan to run
-<tt>rake doc:app</tt>.
+

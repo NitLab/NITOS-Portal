@@ -1,8 +1,10 @@
 defaults: &defaults
   broker_ip: https://83.212.32.165
+  # broker_ip: https://10.64.44.12
   broker_port: 8001
   broker_sleep: 3600
   cm_ip: http://83.212.32.165
+  # cm_ip: http://10.64.44.12
   cm_port: 4567
   cm_sleep: 2.0
   cert_path: "/home/zamihos/user_cert.pem"

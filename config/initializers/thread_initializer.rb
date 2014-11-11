@@ -3,15 +3,20 @@ include NodeStatusHelper
 class Nodes
 
   x= []
+  # @@node_list: a table with the numbers of nodes. ex: for node 
+  # node121 we add 121. Used in node status for turning ON/OFF/reset a node
   Nodes.class_variable_set(:@@node_list, x)
 
   z= []
+  # @@resources_list_names: table with the names of resources. ex for node node121 we add node121,for channel 1 we add 1
   Nodes.class_variable_set(:@@resources_list_names, z)
 
+  # @@resources_list_uuids:hash with the uuids of the resources 
   @@resources_list_uuids = Hash.new
+  # @@hash_details_of_resources: hash with all informations of a resource, used for showing the details of every resource in scheduler  
   @@hash_details_of_resources = Hash.new
 
-  @@resources_list = Hash.new
+
   def refresh_resources_list
     x= []
     Nodes.class_variable_set(:@@node_list, x)
@@ -23,7 +28,8 @@ class Nodes
     channels_list = getChannelsList()
 
     node_list.each do |element|
-      if (element["hardware_type"].start_with? ("PC-"))
+
+      if (!element["hardware_type"].nil?) && ( element["hardware_type"].start_with? ("PC-"))
         @@node_list << element["name"].scan( /\d+$/ ).first
         @@resources_list_uuids[element["name"]] = element["uuid"]
         @@hash_details_of_resources[element["name"]] = element
@@ -60,6 +66,7 @@ end
 
 node_obj = Nodes.new
 
+# thread for updating the lists referring to resources
 Thread.new do
   while true do
     node_obj.refresh_resources_list
@@ -67,6 +74,8 @@ Thread.new do
   end
 end
 
+# thread for updating the status of every node. We ask with getNodeStatus the status of every node
+# and then we inform with the websocket the front-end
 Thread.new do
   while true do
     node_obj.get_node_list.each do |n|
