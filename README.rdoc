@@ -6,5 +6,148 @@ We deals with the designation of the Data Base and the Registration - Sign in/ou
 
 We also constucts the Scheduler tool that gives the opportunity to the experimenter to discover the available resources (nodes, channels) for a given date, reserve a resource, and discover the main characteristics of every resource. In addition, we introduce the Quick Reservation tool, an easy way for reserving resources. In My Reservations tool, the user can observe his/her reservation and cancel a reservation. The Node Status tool is responsible for showing the status of every node reserved by a user. Moreover, a user can change the status of a node, by turning it ON/OFF or by Reseting it. Another feature of the NITOS Portal is that it automatically detects the user time zone and displays all information accordingly.
 
+Installing Portal
 
+1.Install Ruby 
+
+To get started with the Ruby installation, first install RVM:
+
+  $ curl -sSL https://get.rvm.io | bash -s stable
+
+(If you have RVM installed, you should run
+  
+  $ rvm get stable
+
+to ensure that you have the latest version.)
+
+You can then get Ruby set up by examining the requirements for installing it:
+
+  $ rvm requirements
+
+If you get the message “command not found”, you should run source on the rvm executable:
+
+  $ source ~/.rvm/scripts/rvm
+
+You may also have to install a YAML library:
+
+  # For Mac with Homebrew
+  $ brew install libyaml
+
+  # For Debian-based Linux systems
+  $ apt-get install libyaml-dev
+
+  # For Fedora/CentOS/RHEL Linux systems
+  $ yum install libyaml-devel
+
+Finally, you needed to tell RVM where OpenSSL was located when installing Ruby 2.0.0:
+
+  $ rvm install 2.0.0 --with-openssl-dir=$HOME/.rvm/usr
+
+On some systems, especially on Macs using Homebrew, the location of OpenSSL may be different, and you might have to run this command instead:
+
+  $ rvm install 2.0.0 --with-openssl-dir=$HOME/.rvm/opt/openssl
+
+You sould create a gemset with a random name eg NITOSPortal 
+
+  $ rvm use 2.0.0@NITOSPortal --create --default
+
+2.Install RubyGems
+
+  $ which gem
+
+If you already have RubyGems installed, you should make sure your system uses the version tha we used for the Portal's development:
+
+  $ gem update --system 2.1.9
+
+3.Install Rails 
+
+  $ gem install rails --version 4.1.1
+
+To check your Rails installation version, run:
+
+  $ rails -v
+  Rails 4.1.1
+
+If you’re running Linux, you might have to install a couple of other packages at this point:
+
+  $ sudo apt-get install libxslt-dev libxml2-dev libsqlite3-dev # Linux only
+
+or
+
+  $ sudo yum install libxslt-devel libxml2-devel libsqlite3-devel
+
+
+4.Download/Clone Portal 
+
+After finishing with Installations you should clone the project:
+
+  $ git clone https://github.com/NitLab/NITOS-Portal.git
+
+Alternately you can download the app as ZIP.
+
+Install Gems
+
+The next step is to open a terminal and run:
+
+  $ /bin/bash --login
+  $ cd nitos-portal
+
+Next you have to install the gems:
+
+  $ bundle install  
+
+5.Install MYSQL
+
+Install running on the console: 
+
+  $  sudo apt-get install mysql-client-5.5 mysql-server-5.5
+    
+During the installer it asks for a mysql root-user password (type for ex. admin)
+Try to start and stop the mysql server using the commands:
+
+  $  sudo service mysql stop 
+  $  sudo service mysql start
+
+
+6.Database settings on the new rails application
+
+Open the file nitos-portal/config/database.yml  and put your 
+mysql root-user password for the test and development database
+
+You must leave a blank character after the 'password' keybord. So you should get something like this:
+
+adapter: mysql2
+encoding: utf8
+reconnect: false
+database: myapp_development
+pool: 5
+username: root
+password: your-password
+socket: /var/run/mysqld/mysqld.sock
+
+7.Create the Blank Database
+
+Start the mysql database using:
+
+  $ sudo service mysql start
+
+Put the console in nitos-portal folder and run:
+
+  $  rake db:create
+
+If creates the db is correctly creates, it replies with anything...
+It could be useful to check if the db is created or not: do like this:
+
+  $   mysql -u root -p   // open mysql console
+  $ Enter password: type-your-password
+  mysql> show databases;
+
+and you should find the nitos-portal_test and nitos-portal_development db.
+  mysql> \q    // close mysql console
+
+8.Run NITOSPortal 
+
+Put the console in nitos-portal folder and run 
+
+  $ rails s
 
