@@ -117,13 +117,21 @@ mysql root-user password for the test and development database
 You must leave a blank character after the 'password' keybord. So you should get something like this:
 
 adapter: mysql2
+
 encoding: utf8
+
 reconnect: false
+
 database: myapp_development
+
 pool: 5
+
 username: root
+
 password: your-password
+
 socket: /var/run/mysqld/mysqld.sock
+
 
 7.Create the Blank Database
 
@@ -144,6 +152,19 @@ It could be useful to check if the db is created or not: do like this:
 
 and you should find the nitos-portal_test and nitos-portal_development db.
   mysql> \q    // close mysql console
+
+Some useful MYSQL commands
+
+
+    $   mysql -u root -p                    // open mysql console
+    mysql> show databases;           //show all the databases
+    mysql> use  database-name;     //select a database
+    mysql> show tables;                 //show the tables of the selected db
+    mysql> describe  table-name;   //show the attributes of the selected table
+    If you need to change the mysql root password type this command:
+        $  mysqladmin -u root -p password enter-your-new-password
+        Enter password: enter-your-old-password
+
 
 8.Run NITOSPortal 
 
