@@ -8,58 +8,7 @@ We also constucts the Scheduler tool that gives the opportunity to the experimen
 
 Installing Portal
 
-1.Install Ruby 
-
-To get started with the Ruby installation, first install RVM:
-
-  $ curl -sSL https://get.rvm.io | bash -s stable
-
-(If you have RVM installed, you should run
-  
-  $ rvm get stable
-
-to ensure that you have the latest version.)
-
-You can then get Ruby set up by examining the requirements for installing it:
-
-  $ rvm requirements
-
-If you get the message “command not found”, you should run source on the rvm executable:
-
-  $ source ~/.rvm/scripts/rvm
-
-You may also have to install a YAML library:
-
-  # For Mac with Homebrew
-  $ brew install libyaml
-
-  # For Debian-based Linux systems
-  $ apt-get install libyaml-dev
-
-  # For Fedora/CentOS/RHEL Linux systems
-  $ yum install libyaml-devel
-
-Finally, you needed to tell RVM where OpenSSL was located when installing Ruby 2.0.0:
-
-  $ rvm install 2.0.0 --with-openssl-dir=$HOME/.rvm/usr
-
-On some systems, especially on Macs using Homebrew, the location of OpenSSL may be different, and you might have to run this command instead:
-
-  $ rvm install 2.0.0 --with-openssl-dir=$HOME/.rvm/opt/openssl
-
-You sould create a gemset with a random name eg NITOSPortal 
-
-  $ rvm use 2.0.0@NITOSPortal --create --default
-
-2.Install RubyGems
-
-  $ which gem
-
-If you already have RubyGems installed, you should make sure your system uses the version tha we used for the Portal's development:
-
-  $ gem update --system 2.1.9
-
-3.Install Rails 
+1.Install Rails 
 
   $ gem install rails --version 4.1.1
 
@@ -77,7 +26,7 @@ or
   $ sudo yum install libxslt-devel libxml2-devel libsqlite3-devel
 
 
-4.Download/Clone Portal 
+2.Download/Clone Portal 
 
 After finishing with Installations you should clone the project:
 
@@ -96,7 +45,7 @@ Next you have to install the gems:
 
   $ bundle install  
 
-5.Install MYSQL
+3.Install MYSQL
 
 Install running on the console: 
 
@@ -109,7 +58,7 @@ Try to start and stop the mysql server using the commands:
   $  sudo service mysql start
 
 
-6.Database settings on the new rails application
+4.Database settings on the new rails application
 
 Open the file nitos-portal/config/database.yml  and put your 
 mysql root-user password for the test and development database
@@ -133,7 +82,7 @@ password: your-password
 socket: /var/run/mysqld/mysqld.sock
 
 
-7.Create the Blank Database
+5.Create the Blank Database
 
 Start the mysql database using:
 
@@ -166,7 +115,7 @@ Some useful MYSQL commands
         Enter password: enter-your-old-password
 
 
-8.Run NITOSPortal 
+6.Run NITOSPortal 
 
 Put the console in nitos-portal folder and run 
 
